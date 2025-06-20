@@ -1,1 +1,2 @@
 from .ls_bucket_func import ls_bucket
+from .copy_from_bucket_func import copy_from_bucket
