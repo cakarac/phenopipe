@@ -1,14 +1,14 @@
 import os
-import re
 import subprocess
 from typing import List, Optional
-from google.cloud import storage
 
-def remove_from_bucket(files: str|List[str], 
+def remove_from_bucket(files: str|List[str],
+                       recursive: Optional[bool] = False,
                        bucket_id: Optional[str] = None) -> None:
-    """Removes the file from the bucket
+    """Removes the file(s) from the bucket
 
-    :param file_path: Path to file to remove.
+    :param files: Path to file(s) or a list of files to remove.
+    :param recursive: Either to remove files recursively (this parameter is passed to gcloud util as -r flag)
     :param bucket_id: The bucket id to remove the file from. Defaults to environment variable WORKSPACE_BUCKET.
     
     Example:
@@ -17,15 +17,14 @@ def remove_from_bucket(files: str|List[str],
     """
     if bucket_id == None:
         bucket_id = os.getenv('WORKSPACE_BUCKET')
-    if isinstance(files, list):
-        for file in files:
-            subprocess.check_output(["gcloud", "storage", "rm", f'{bucket_id}/{file}'])
-    else:
-        bucket_name = bucket_id.replace("gs://", "")
     
-        client = storage.Client()
-        all_blobs = client.list_blobs(bucket_name)
-        for blob in all_blobs:
-            match = re.match(re.compile(files), blob.name)
-            if match:
-                blob.delete()
+    if not (isinstance(files, str) or 
+            (isinstance(files, list) and all([isinstance(f, str) for f in files]))):
+        raise ValueError("The files parameter must be a string or list of string")
+    
+    cmd = ["gcloud", "storage", "rm", '-r'] if recursive else ["gcloud", "storage", "rm"]
+    if isinstance(files, str):
+        subprocess.check_output(cmd + [f'{bucket_id}/{files}'])
+    else:
+        for file in files:
+            subprocess.Popen(cmd + [f'{bucket_id}/{file}'])
