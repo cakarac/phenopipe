@@ -9,13 +9,13 @@ class Task(BaseModel):
     '''Generic task class representing one step in analysis.'''
     
     #: input dataframes
-    inputs: Optional[dict[str, PolarsDataFrame]] 
+    inputs: dict[str, PolarsDataFrame] | None
 
     #: environment variables applied to each task in analysis plan
-    env_vars: Optional[dict[str, str]]
+    env_vars: dict[str, str] | None
 
     #: output of complete method representing result of task 
-    output: Optional[PolarsDataFrame] 
+    output: PolarsDataFrame | None
         
     def complete():
         pass
