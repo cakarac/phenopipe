@@ -1,6 +1,6 @@
 [project]
 name = "phenopipe"
-version = "0.2.0"
+version = "0.3.0a2"
 description = ""
 authors = [
     {name = "cakarac",email = "cakar.adnancihan@gmail.com"}
@@ -9,7 +9,9 @@ license = {file = "LICENSE"}
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "polars (>=1.31.0,<2.0.0)"
+    "polars (>=1.31.0,<2.0.0)",
+    "google-cloud-bigquery (>=3.34.0,<4.0.0)",
+    "pydantic (>=2.11.7,<3.0.0)"
 ]
 
 [tool.poetry]

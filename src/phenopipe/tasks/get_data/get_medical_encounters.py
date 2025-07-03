@@ -1,0 +1,83 @@
+from typing import Optional
+import polars as pl
+from phenopipe.tasks.get_data.get_data import GetData
+
+class GetMedicalEncounters(GetData):
+    #: name of the data query to run
+    query_name: Optional[str] = "medical_encounters"
+
+    #: if query is large according to google cloud api
+    large_query: Optional[bool] = False
+    
+    #: which medical encounter to return (first/last/all)
+    time_select: str = "all"
+
+    def model_post_init(self, __context):
+        self.query_name = f'{self.time_select}_{self.query_name}'
+    
+    def complete(self):
+        '''
+        Query medical encounters (first/last/all) and update self.output with resulting dataframe
+        '''
+        local = self.cacher.get_local(self.query_name, self.location, self.large_query)
+        if self.cache and self.cacher.get_cache(self.query_name, local, self.lazy):
+            self.output = self.cacher.cached_output
+        else:
+            self.output = self.run_medical_encounters_query(local=local)
+        if isinstance(self.output.collect_schema().get(f"{self.time_select}_medical_encounters_entry_date"), pl.String):
+            self.output = self.output.with_columns(pl.col(f"{self.time_select}_medical_encounters_entry_date").str.to_date("%Y-%m-%d"))
+    def run_medical_encounters_query(self, local):
+        '''Runs medical encounters query with given local and self.time_select (first/last/all)'''
+        match self.time_select:
+            case "last":
+                q_select = "MAX"
+            case "first":
+                q_select = "MIN"
+            case "all":
+                q_select = ""
+            case _:
+                raise ValueError("Unknown select statement!")
+        query = f'''
+                    WITH ehr AS (
+                    SELECT person_id, {q_select}(m.measurement_date) AS date
+                    FROM `measurement` AS m
+                    LEFT JOIN `measurement_ext` AS mm on m.measurement_id = mm.measurement_id
+                    WHERE LOWER(mm.src_id) LIKE 'ehr site%'
+                    GROUP BY person_id
+
+                    UNION DISTINCT
+
+                    SELECT person_id, {q_select}(m.condition_start_date) AS date
+                    FROM `condition_occurrence` AS m
+                    LEFT JOIN `condition_occurrence_ext` AS mm on m.condition_occurrence_id = mm.condition_occurrence_id
+                    WHERE LOWER(mm.src_id) LIKE 'ehr site%'
+                    GROUP BY person_id
+
+                    UNION DISTINCT
+
+                    SELECT person_id, {q_select}(m.procedure_date) AS date
+                    FROM `procedure_occurrence` AS m
+                    LEFT JOIN `procedure_occurrence_ext` AS mm on m.procedure_occurrence_id = mm.procedure_occurrence_id
+                    WHERE LOWER(mm.src_id) LIKE 'ehr site%'
+                    GROUP BY person_id
+
+                    UNION DISTINCT
+
+                    SELECT person_id, {q_select}(m.visit_end_date) AS date
+                    FROM `visit_occurrence` AS m
+                    LEFT JOIN `visit_occurrence_ext` AS mm on m.visit_occurrence_id = mm.visit_occurrence_id
+                    WHERE LOWER(mm.src_id) LIKE 'ehr site%'
+                    GROUP BY person_id
+
+                    UNION DISTINCT
+
+                    SELECT person_id, {q_select}(m.drug_exposure_start_date) AS date
+                    FROM `drug_exposure` AS m
+                    GROUP BY person_id
+                    )
+
+                    SELECT person_id, {q_select}(date) as {self.time_select}_medical_encounters_entry_date
+                    FROM ehr
+                    GROUP BY person_id
+                '''
+        return self.query_func(query, bucket_id=self.bucket_id, location = local)
