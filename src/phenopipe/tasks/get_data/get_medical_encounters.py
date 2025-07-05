@@ -1,10 +1,10 @@
 from typing import Optional
 import polars as pl
 from phenopipe.tasks.get_data.get_data import GetData
+from pydantic import computed_field
+import inflection
 
 class GetMedicalEncounters(GetData):
-    #: name of the data query to run
-    query_name: Optional[str] = "medical_encounters"
 
     #: if query is large according to google cloud api
     large_query: Optional[bool] = False
@@ -12,15 +12,18 @@ class GetMedicalEncounters(GetData):
     #: which medical encounter to return (first/last/all)
     time_select: str = "all"
 
-    def model_post_init(self, __context):
-        self.query_name = f'{self.time_select}_{self.query_name}'
+    @computed_field
+    @property
+    def task_name(self) -> str:
+        return inflection.underscore(f'{self.time_select}_{self.__class__.__name__}')
+    
     
     def complete(self):
         '''
         Query medical encounters (first/last/all) and update self.output with resulting dataframe
         '''
-        local = self.cacher.get_local(self.query_name, self.location, self.large_query)
-        if self.cache and self.cacher.get_cache(self.query_name, local, self.lazy):
+        local = self.cacher.get_local(self.task_name, self.location, self.large_query)
+        if self.cache and self.cacher.get_cache(self.task_name, local, self.lazy):
             self.output = self.cacher.cached_output
         else:
             self.output = self.run_medical_encounters_query(local=local)
