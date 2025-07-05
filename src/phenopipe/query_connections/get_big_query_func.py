@@ -1,8 +1,3 @@
-import os
-from typing import Optional
-import polars as pl
-from google.cloud import bigquery
-
 def get_big_query(query: str,
                   location: str,
                   bucket_id: Optional[str] = None,
@@ -20,8 +15,8 @@ def get_big_query(query: str,
         default_dataset = os.getenv("WORKSPACE_CDR")
     
     client = bigquery.Client()
-    res = client.query(query, job_config = bigquery.job.QueryJobConfig(default_dataset=default_dataset))
-    ex_res = client.extract_table(res.destination, f'{bucket_id}/{location}')
+    res = client.query_and_wait(query, job_config = bigquery.job.QueryJobConfig(default_dataset=default_dataset))
+    ex_res = client.extract_table(res._table, f'{bucket_id}/{location}')
     if ex_res.result().done():
-        print("Given query is successfully saved into the bucket")
+        print(f"Given query is successfully saved into {location}")
     return pl.from_arrow(res.to_arrow())
