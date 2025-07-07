@@ -1,5 +1,6 @@
 import os
 from typing import Optional, Callable
+from pydantic import model_validator
 from phenopipe.query_connections import get_big_query
 from phenopipe.tasks.get_data.cacher import Cacher
 from phenopipe.tasks.task import Task
@@ -26,4 +27,10 @@ class GetData(Task):
 
     #: either to read or scan dataframe
     lazy: Optional[bool] = False
+
+    @model_validator(mode='after')
+    def check_lazy_cache(self):
+        if self.lazy and not self.cache:
+            raise ValueError('Lazyframes are only allowed when cached')
+        return self
     
