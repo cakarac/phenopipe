@@ -4,6 +4,8 @@ from pydantic import BaseModel
 from phenopipe.bucket import ls_bucket, read_csv_from_bucket
 
 PolarsDataFrame = TypeVar('polars.dataframe.frame.DataFrame')
+PolarsLazyFrame = TypeVar('polars.lazyframe.frame.LazyFrame')
+
 class Cacher(BaseModel):
         
     #: function to check cache availability
@@ -13,7 +15,7 @@ class Cacher(BaseModel):
     cache_func: Optional[Callable] = read_csv_from_bucket
     
     #: cached output
-    cached_output: Optional[PolarsDataFrame] = None
+    cached_output: PolarsDataFrame|PolarsLazyFrame = None
     
     def get_local(self, query_name, location, large_query):
         if large_query:

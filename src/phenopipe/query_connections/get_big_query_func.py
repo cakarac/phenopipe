@@ -1,3 +1,8 @@
+import os
+from typing import Optional
+import polars as pl
+from google.cloud import bigquery
+
 def get_big_query(query: str,
                   location: str,
                   bucket_id: Optional[str] = None,

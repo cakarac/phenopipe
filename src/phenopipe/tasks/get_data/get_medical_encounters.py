@@ -15,7 +15,7 @@ class GetMedicalEncounters(GetData):
     @computed_field
     @property
     def task_name(self) -> str:
-        return inflection.underscore(f'{self.time_select}_{self.__class__.__name__}')
+        return inflection.underscore(f'{self.__class__.__name__}_{self.time_select}')
     
     
     def complete(self):
