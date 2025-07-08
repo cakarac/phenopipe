@@ -25,6 +25,9 @@ class Task(BaseModel):
 
     #: output of complete method representing result of task 
     output: PolarsDataFrame|PolarsLazyFrame = None
+
+    #: either the task is completed
+    completed: bool = False
     
     
     @field_validator('inputs', mode='after')
