@@ -19,6 +19,9 @@ class Task(BaseModel):
         
     #: minimum requirements on inputs schema to avoid any errors
     min_inputs_schemas: Optional[dict[str, dict]] = {}
+    
+    #: minimum requirements on output schema
+    min_output_schema: Optional[dict[str, str]] = {}
 
     #: environment variables applied to each task in analysis plan
     env_vars: Optional[dict[str, str]] = None
@@ -59,6 +62,12 @@ class Task(BaseModel):
                     raise ValueError("minimal inputs schemas are not satisfied!")
             except KeyError as e:
                 raise ValueError("missing input dataframe")
+        return True
+        
+    def validate_min_output_schema(self):
+        sc = self.output.collect_schema().to_python()
+        if dict(sc, **self.min_output_schema) != sc:
+            raise ValueError("minimal output schemas are not satisfied!")
         return True
         
     class Config:
