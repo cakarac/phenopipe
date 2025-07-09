@@ -1,8 +1,8 @@
 import os
 from typing import Optional, Callable
-from pydantic import model_validator
-from phenopipe.query_connections import get_big_query
-from phenopipe.tasks.get_data.cacher import Cacher
+from pydantic import InstanceOf
+from phenopipe.query_connections.query_connection import QueryConnection
+from phenopipe.query_connections import BigQueryConnection
 from phenopipe.tasks.task import Task
 
 
@@ -10,27 +10,16 @@ class GetData(Task):
     '''
     Generic class to retrieve data from database.
     '''    
-    #: bucket folder to save the output
-    location: str = "phenopipe_wd/datasets" 
-
-    #: bucket id to save the result
-    bucket_id: Optional[str] = os.getenv("WORKSPACE_BUCKET") 
-
-    #: query connector to retrive data
-    query_func: Optional[Callable] = get_big_query 
-
     #: either to check for cache in bucket
     cache: Optional[bool] = True 
-
-    #: cacher object to check and retrieve cached data
-    cacher: Optional[Cacher] = Cacher()
 
     #: either to read or scan dataframe
     lazy: Optional[bool] = False
 
-    @model_validator(mode='after')
-    def check_lazy_cache(self):
-        if self.lazy and not self.cache:
-            raise ValueError('Lazyframes are only allowed when cached')
-        return self
-    
+    #: query connector to retrive data
+    query_conn: Optional[InstanceOf[QueryConnection]] = None
+
+    def model_post_init(self, __context__=None):
+        super().model_post_init()
+        if self.query_conn is None:
+            self.query_conn =  BigQueryConnection(lazy=self.lazy, cache = self.cache)
