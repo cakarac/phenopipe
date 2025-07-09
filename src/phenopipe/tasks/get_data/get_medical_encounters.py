@@ -1,8 +1,9 @@
 from typing import Optional
-import polars as pl
-from phenopipe.tasks.get_data.get_data import GetData
-from pydantic import computed_field
 import inflection
+import polars as pl
+from pydantic import computed_field
+from phenopipe.tasks.get_data.get_data import GetData
+from phenopipe.tasks.task import completion
 
 class GetMedicalEncounters(GetData):
 
@@ -17,7 +18,7 @@ class GetMedicalEncounters(GetData):
     def task_name(self) -> str:
         return inflection.underscore(f'{self.__class__.__name__}_{self.time_select}')
     
-    
+    @completion
     def complete(self):
         '''
         Query medical encounters (first/last/all) and update self.output with resulting dataframe

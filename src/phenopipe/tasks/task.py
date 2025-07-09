@@ -1,12 +1,24 @@
-import polars as pl
-from typing import Optional, TypeVar
-import inflection
-from pydantic import BaseModel, computed_field, field_validator
-import random
 import string
+import random
+from functools import wraps
+from typing import Optional, TypeVar
+from pydantic import BaseModel, computed_field, field_validator
+import polars as pl
+import inflection
 
 PolarsDataFrame = TypeVar('polars.dataframe.frame.DataFrame')
 PolarsLazyFrame = TypeVar('polars.lazyframe.frame.LazyFrame')
+
+def completion(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        self = args[0]
+        print(f"Starting completion of {self.task_name} with id {self.task_id}")
+        self.validate_min_inputs_schemas()
+        func(*args, **kwargs)
+        self.validate_min_output_schema()
+        self.completed = True
+    return wrapper
 
 class Task(BaseModel):
     '''Generic task class representing one step in analysis.'''
@@ -55,6 +67,7 @@ class Task(BaseModel):
             self.task_id =  "".join(random.choices(string.ascii_letters + string.digits, k=10))
 
     def validate_min_inputs_schemas(self):
+        print("Validating the inputs...")
         for k in self.min_inputs_schemas.keys():
             sc = self.inputs[k].collect_schema().to_python()
             try:
@@ -65,6 +78,7 @@ class Task(BaseModel):
         return True
         
     def validate_min_output_schema(self):
+        print("Validating the output...")
         sc = self.output.collect_schema().to_python()
         if dict(sc, **self.min_output_schema) != sc:
             raise ValueError("minimal output schemas are not satisfied!")

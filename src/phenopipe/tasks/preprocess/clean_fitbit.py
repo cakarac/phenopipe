@@ -1,5 +1,6 @@
-from phenopipe.tasks.task import Task
+import datetime
 import polars as pl
+from phenopipe.tasks.task import Task, completion
 
 class CleanFitbit(Task):
     wear_time_min: int =10 #: minimum wear time for subsetting
@@ -13,6 +14,7 @@ class CleanFitbit(Task):
                                           "date_of_birth":datetime.date},
                           "wear_time":{"person_id":int,
                                        "wear_time":int}}
+    @completion
     def complete(self):
         '''
         Clean fitbit daily activity summary dataframe with pre-determined thresholds
