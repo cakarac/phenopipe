@@ -1,3 +1,3 @@
-from .get_big_query_func import get_big_query
+from .big_query_connection import BigQueryConnection
 
-__all__ = ["get_big_query"]
+__all__ = ["BigQueryConnection"]

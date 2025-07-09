@@ -11,7 +11,7 @@ class GetMedicalEncounters(GetData):
     large_query: Optional[bool] = False
     
     #: which medical encounter to return (first/last/all)
-    time_select: str = "all"
+    time_select: str = "last"
 
     @computed_field
     @property
@@ -23,22 +23,12 @@ class GetMedicalEncounters(GetData):
         '''
         Query medical encounters (first/last/all) and update self.output with resulting dataframe
         '''
-        local = self.cacher.get_local(self.task_name, self.location, self.large_query)
-        if self.cache and self.cacher.get_cache(self.task_name, local, self.lazy):
-            self.output = self.cacher.cached_output
-        else:
-            self.output = self.run_medical_encounters_query(local=local)
-        if isinstance(self.output.collect_schema().get(f"{self.time_select}_medical_encounters_entry_date"), pl.String):
-            self.output = self.output.with_columns(pl.col(f"{self.time_select}_medical_encounters_entry_date").str.to_date("%Y-%m-%d"))
-    def run_medical_encounters_query(self, local):
         '''Runs medical encounters query with given local and self.time_select (first/last/all)'''
         match self.time_select:
             case "last":
                 q_select = "MAX"
             case "first":
                 q_select = "MIN"
-            case "all":
-                q_select = ""
             case _:
                 raise ValueError("Unknown select statement!")
         query = f'''
@@ -84,4 +74,7 @@ class GetMedicalEncounters(GetData):
                     FROM ehr
                     GROUP BY person_id
                 '''
-        return self.query_func(query, bucket_id=self.bucket_id, location = local)
+        self.output = self.query_conn.get_query(query, self.query_name, self.large_query)        
+        if isinstance(self.output.collect_schema().get(f"{self.time_select}_medical_encounters_entry_date"), pl.String):
+            self.output = self.output.with_columns(pl.col(f"{self.time_select}_medical_encounters_entry_date").str.to_date("%Y-%m-%d"))
+        

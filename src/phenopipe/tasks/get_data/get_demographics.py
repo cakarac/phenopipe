@@ -7,24 +7,15 @@ class GetDemographics(GetData):
 
     #: name of the data query to run
     query_name: Optional[str] = "demographics"
-
+    
     #: if query is large according to google cloud api
     large_query: Optional[bool] = False
-
+    
     @completion
     def complete(self):
         '''
         Query demographics data and update self.output with resulting dataframe
         '''
-        local = self.cacher.get_local(self.query_name, self.location, self.large_query)
-        if self.cache and self.cacher.get_cache(self.query_name, local, self.lazy):
-            self.output = self.cacher.cached_output
-        else:
-            self.output = self.run_demographics_query(local=local)
-        if isinstance(self.output.collect_schema().get("date_of_birth"), pl.String):
-            self.output = self.output.with_columns(pl.col("date_of_birth").str.to_datetime("%Y-%m-%d %H:%M:%S %Z").dt.date())    
-    def run_demographics_query(self, local):
-        '''runs demographics query'''
         query = '''
                     SELECT
                         person.person_id,
@@ -44,4 +35,8 @@ class GetDemographics(GetData):
                         `concept` p_sex_at_birth_concept
                             ON person.sex_at_birth_concept_id = p_sex_at_birth_concept.concept_id
                 '''
-        return self.query_func(query, bucket_id=self.bucket_id, location = local)
+        
+        self.output = self.query_conn.get_query(query, self.query_name, self.large_query)
+        if isinstance(self.output.collect_schema().get("date_of_birth"), pl.String):
+            self.output = self.output.with_columns(pl.col("date_of_birth").str.to_datetime("%Y-%m-%d %H:%M:%S %Z").dt.date())    
+    
