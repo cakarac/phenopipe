@@ -1,6 +1,7 @@
 import string
 import random
 from functools import wraps
+from abc import ABC, abstractmethod
 from typing import Optional, TypeVar
 from pydantic import BaseModel, computed_field, field_validator
 import polars as pl
@@ -13,6 +14,7 @@ def completion(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         self = args[0]
+        self.complete_input_tasks()
         print(f"Starting completion of {self.task_name} with id {self.task_id}")
         self.validate_min_inputs_schemas()
         func(*args, **kwargs)
@@ -20,7 +22,7 @@ def completion(func):
         self.completed = True
     return wrapper
 
-class Task(BaseModel):
+class Task(BaseModel, ABC):
     '''Generic task class representing one step in analysis.'''
     
     #: task id
@@ -86,5 +88,7 @@ class Task(BaseModel):
         
     class Config:
         validate_assignment = True
+    
+    @abstractmethod
     def complete():
         pass
