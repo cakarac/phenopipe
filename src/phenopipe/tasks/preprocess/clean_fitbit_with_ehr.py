@@ -1,8 +1,10 @@
 import datetime
 import polars as pl
 from phenopipe.tasks.preprocess import CleanFitbit
+from phenopipe.tasks.task import completion
 
 class CleanFitbitWithEhr(CleanFitbit):
+    @completion
     def complete(self):
         min_inputs_schemas: dict[str, dict] = {
                             "fitbit":{"person_id":int,
