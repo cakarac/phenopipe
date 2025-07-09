@@ -3,9 +3,12 @@ import random
 from functools import wraps
 from abc import ABC, abstractmethod
 from typing import Optional, TypeVar
-from pydantic import BaseModel, computed_field, field_validator
 import polars as pl
 import inflection
+from pydantic import (BaseModel, 
+                      computed_field, 
+                      field_validator,
+                      model_serializer)
 
 PolarsDataFrame = TypeVar('polars.dataframe.frame.DataFrame')
 PolarsLazyFrame = TypeVar('polars.lazyframe.frame.LazyFrame')
@@ -64,6 +67,18 @@ class Task(BaseModel, ABC):
     def task_name(self) -> str:
         return inflection.underscore(self.__class__.__name__)
     
+    @model_serializer()
+    def serialize_task(self):
+        mod = {
+            "task_name":self.task_name,
+            "task_id":self.task_id,
+            "env_vars":self.env_vars,
+            "input_tasks":self.input_tasks
+        }
+        return {
+            k:v for k, v in mod.items() if v
+        }
+    
     def model_post_init(self, __context__=None):
         if self.task_id is None:
             self.task_id =  "".join(random.choices(string.ascii_letters + string.digits, k=10))
@@ -89,6 +104,12 @@ class Task(BaseModel, ABC):
     class Config:
         validate_assignment = True
     
+    def complete_input_tasks(self):
+        for task in self.input_tasks.values():
+            if not task.completed:
+                task.complete()
+        self.inputs.update(**{k:v.output for k,v in self.input_tasks.items()})
+
     @abstractmethod
     def complete():
         pass
