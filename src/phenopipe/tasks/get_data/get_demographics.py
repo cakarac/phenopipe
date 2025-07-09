@@ -1,6 +1,7 @@
 from typing import Optional
 import polars as pl
 from phenopipe.tasks.get_data.get_data import GetData
+from phenopipe.tasks.task import completion
 
 class GetDemographics(GetData):
 
@@ -10,6 +11,7 @@ class GetDemographics(GetData):
     #: if query is large according to google cloud api
     large_query: Optional[bool] = False
 
+    @completion
     def complete(self):
         '''
         Query demographics data and update self.output with resulting dataframe
