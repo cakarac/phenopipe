@@ -16,10 +16,7 @@ class GetData(Task):
     #: either to read or scan dataframe
     lazy: Optional[bool] = False
 
-    #: query connector to retrive data
-    query_conn: Optional[InstanceOf[QueryConnection]] = None
-
     def model_post_init(self, __context__=None):
         super().model_post_init()
-        if self.query_conn is None:
+        if self.env_vars.get("query_conn", None) is None:
             self.env_vars["query_conn"] =  BigQueryConnection(lazy=self.lazy, cache = self.cache)

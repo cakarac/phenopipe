@@ -4,9 +4,6 @@ from phenopipe.tasks.get_data.get_data import GetData
 from phenopipe.tasks.task import completion
 
 class GetDemographics(GetData):
-
-    #: name of the data query to run
-    task_name: Optional[str] = "demographics"
     
     #: if query is large according to google cloud api
     large_query: Optional[bool] = False
