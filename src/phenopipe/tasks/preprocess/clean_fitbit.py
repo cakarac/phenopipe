@@ -28,8 +28,6 @@ class CleanFitbit(Task):
         -------
          - cleaned daily activity summary dataframe
         '''
-        if not self.validate_min_inputs_schemas():
-            raise ValueError("invalid inputs to clean fitbit data")
         fitbit = self.inputs["fitbit"]
         demo = self.inputs["demographics"]
         wear_time = self.inputs["wear_time"]
