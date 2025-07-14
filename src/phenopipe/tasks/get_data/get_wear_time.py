@@ -5,7 +5,7 @@ from phenopipe.tasks.task import completion
 
 class GetWearTime(GetData):
     #: name of the data query to run
-    query_name: Optional[str] = "wear_time"
+    task_name: Optional[str] = "wear_time"
 
     #: if query is large according to google cloud api
     large_query: Optional[bool] = False
@@ -23,6 +23,6 @@ class GetWearTime(GetData):
                           GROUP BY CAST(datetime AS DATE), EXTRACT(HOUR FROM datetime), person_id) t
                     GROUP BY date, person_id 
                 '''
-        self.output = self.env_vars["query_conn"].get_query(query, self.query_name, self.large_query)      
+        self.output = self.env_vars["query_conn"].get_query(query, self.task_name, self.large_query)      
         if isinstance(self.output.collect_schema().get("date"), pl.String):
             self.output = self.output.with_columns(pl.col("date").str.to_date("%Y-%m-%d"))
