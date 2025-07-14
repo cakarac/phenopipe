@@ -3,9 +3,10 @@ from .get_data import (GetFitbit,
                        GetMedicalEncounters,
                        GetWearTime)
 from .preprocess import (CleanFitbit,
-                         CleanFitbitWithEhr)
+                         CleanFitbitWithEhr,
+                         CleanSleep)
 
-from .task import Task, completion
+from .task import Task
 
 __all__ = ["GetFitbit",
            "GetDemographics",
@@ -14,4 +15,4 @@ __all__ = ["GetFitbit",
            "CleanFitbit",
            "CleanFitbitWithEhr",
            "Task",
-           "completion"]
+           "CleanSleep"]

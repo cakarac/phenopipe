@@ -38,19 +38,19 @@ class CleanFitbit(Task):
         print("Initial Cohort")
         self.summarize_n(df)
         
-        print("\nRemoving days where wear time < 10 hrs.")
+        print(f"\nRemoving days where wear time < {self.wear_time_min} hrs.")
         df = df.filter(pl.col("wear_time") >= self.wear_time_min)
         self.summarize_n(df)
 
-        print("\nRemoving days where step count < 100.")
+        print(f"\nRemoving days where step count < {self.steps_min}.")
         df = df.filter(pl.col("steps") >= self.steps_min)
         self.summarize_n(df)
         
-        print("\nRemoving days where step counts > 45,000.")
+        print(f"\nRemoving days where step counts > {self.steps_max}.")
         df = df.filter(pl.col("steps") <= self.steps_max)
         self.summarize_n(df)
         
-        print("\nRemoving days where age < 18.")
+        print(f"\nRemoving days where age < {self.age_min}.")
         df = df.filter((pl.col("date") - pl.col("date_of_birth")).dt.total_days()/365.25 >= self.age_min)
         self.summarize_n(df)
         
