@@ -3,9 +3,9 @@ import polars as pl
 from phenopipe.tasks.task import Task, completion
 from phenopipe.desc_funcs import summarize_n
 class CleanSleep(Task):
-    is_main_sleep: bool = True #: minimum wear time for subsetting
-    minutes_min: int = 0 #: minimum steps for subsetting
-    minutes_max: int = 1_440 #: maximum steps for subsetting
+    is_main_sleep: bool = True #: either to subset non-main-sleep
+    minutes_min: int = 0 #: minimum asleep minutes for subsetting
+    minutes_max: int = 1_440 #: maximum asleep minutes for subsetting
     age_min: int = 18 #: minimum age for subsetting
         
     min_inputs_schemas: dict[str, dict] = {"sleep":{"person_id":int,
