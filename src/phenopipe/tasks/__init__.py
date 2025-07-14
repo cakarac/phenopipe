@@ -1,7 +1,8 @@
 from .get_data import (GetFitbit, 
                        GetDemographics, 
                        GetMedicalEncounters,
-                       GetWearTime)
+                       GetWearTime,
+                       GetSleep)
 from .preprocess import (CleanFitbit,
                          CleanFitbitWithEhr,
                          CleanSleep)
@@ -15,4 +16,5 @@ __all__ = ["GetFitbit",
            "CleanFitbit",
            "CleanFitbitWithEhr",
            "Task",
-           "CleanSleep"]
+           "CleanSleep",
+           "GetSleep"]
