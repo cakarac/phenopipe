@@ -74,7 +74,7 @@ class GetMedicalEncounters(GetData):
                     FROM ehr
                     GROUP BY person_id
                 '''
-        self.output = self.query_conn.get_query(query, self.query_name, self.large_query)        
+        self.output = self.env_vars["query_conn"].get_query(query, self.query_name, self.large_query)        
         if isinstance(self.output.collect_schema().get(f"{self.time_select}_medical_encounters_entry_date"), pl.String):
             self.output = self.output.with_columns(pl.col(f"{self.time_select}_medical_encounters_entry_date").str.to_date("%Y-%m-%d"))
         
