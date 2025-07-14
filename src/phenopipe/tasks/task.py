@@ -2,7 +2,7 @@ import string
 import random
 from functools import wraps
 from abc import ABC, abstractmethod
-from typing import Optional, TypeVar
+from typing import Optional, TypeVar, Any
 import polars as pl
 import inflection
 from pydantic import (BaseModel, 
@@ -33,6 +33,9 @@ class Task(BaseModel, ABC):
 
     #: input dataframes
     inputs: dict = {}
+
+    #: input tasks
+    input_tasks: dict = {}
         
     #: minimum requirements on inputs schema to avoid any errors
     min_inputs_schemas: Optional[dict[str, dict]] = {}
@@ -41,7 +44,10 @@ class Task(BaseModel, ABC):
     min_output_schema: Optional[dict[str, str]] = {}
 
     #: environment variables applied to each task in analysis plan
-    env_vars: Optional[dict[str, str]] = None
+    env_vars: Optional[dict[str, Any]] = {}
+
+    #: task variables specific to each task
+    task_vars: Optional[dict[str, Any]] = {}
 
     #: output of complete method representing result of task 
     output: PolarsDataFrame|PolarsLazyFrame = None
