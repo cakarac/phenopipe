@@ -6,7 +6,7 @@ from phenopipe.tasks.task import completion
 class GetFitbit(GetData):
     
     #: name of the data query to run
-    query_name: Optional[str] = "fitbit"
+    task_name: Optional[str] = "fitbit"
 
     #: if query is large according to google cloud api
     large_query: Optional[bool] = True
@@ -28,7 +28,7 @@ class GetFitbit(GetData):
                 FROM
                     `activity_summary` activity_summary
                 '''
-        self.output = self.env_vars["query_conn"].get_query(query, self.query_name, self.large_query)
+        self.output = self.env_vars["query_conn"].get_query(query, self.task_name, self.large_query)
         if isinstance(self.output.collect_schema().get("date"), pl.String):
             self.output = self.output.with_columns(pl.col("date").str.to_date("%Y-%m-%d"))
         
