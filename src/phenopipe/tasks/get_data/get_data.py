@@ -22,4 +22,4 @@ class GetData(Task):
     def model_post_init(self, __context__=None):
         super().model_post_init()
         if self.query_conn is None:
-            self.query_conn =  BigQueryConnection(lazy=self.lazy, cache = self.cache)
+            self.env_vars["query_conn"] =  BigQueryConnection(lazy=self.lazy, cache = self.cache)

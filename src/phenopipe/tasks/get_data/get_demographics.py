@@ -36,7 +36,7 @@ class GetDemographics(GetData):
                             ON person.sex_at_birth_concept_id = p_sex_at_birth_concept.concept_id
                 '''
         
-        self.output = self.query_conn.get_query(query, self.query_name, self.large_query)
+        self.output = self.env_vars["query_conn"].get_query(query, self.query_name, self.large_query)
         if isinstance(self.output.collect_schema().get("date_of_birth"), pl.String):
             self.output = self.output.with_columns(pl.col("date_of_birth").str.to_datetime("%Y-%m-%d %H:%M:%S %Z").dt.date())    
     
