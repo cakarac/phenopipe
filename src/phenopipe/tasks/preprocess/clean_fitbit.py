@@ -1,6 +1,7 @@
 import datetime
 import polars as pl
 from phenopipe.tasks.task import Task, completion
+from phenopipe.desc_funcs import summarize_n
 
 class CleanFitbit(Task):
     wear_time_min: int =10 #: minimum wear time for subsetting
@@ -36,30 +37,24 @@ class CleanFitbit(Task):
               .join(demo.select("person_id", "date_of_birth"), on= "person_id")
               .join(wear_time.select("person_id", "date", "wear_time"), on=["person_id", "date"]))
         print("Initial Cohort")
-        self.summarize_n(df)
+        summarize_n(df)
         
         print(f"\nRemoving days where wear time < {self.wear_time_min} hrs.")
         df = df.filter(pl.col("wear_time") >= self.wear_time_min)
-        self.summarize_n(df)
+        summarize_n(df)
 
         print(f"\nRemoving days where step count < {self.steps_min}.")
         df = df.filter(pl.col("steps") >= self.steps_min)
-        self.summarize_n(df)
+        summarize_n(df)
         
         print(f"\nRemoving days where step counts > {self.steps_max}.")
         df = df.filter(pl.col("steps") <= self.steps_max)
-        self.summarize_n(df)
+        summarize_n(df)
         
         print(f"\nRemoving days where age < {self.age_min}.")
         df = df.filter((pl.col("date") - pl.col("date_of_birth")).dt.total_days()/365.25 >= self.age_min)
-        self.summarize_n(df)
+        summarize_n(df)
         
         self.output = df
 
-    def summarize_n(self, df):
-        '''print cohort N and recorded days'''
-        if isinstance(df, pl.LazyFrame):
-            print("Skipping summarize N since inputs are Lazy.")
-        else:
-            print(f'N: {df.n_unique(subset="person_id")}')
-            print(f'Days: {df.shape[0]}')
+    

@@ -13,14 +13,12 @@ from phenopipe.tasks.get_data.get_data import GetData
 from phenopipe.tasks.task import completion
 
 class GetMedicalEncounters(GetData):
-
-    #: if query is large according to google cloud api
-    large_query: Optional[bool] = False
     
-    def model_post_init(self, __context__=None):
-        super().model_post_init()
-        if self.task_vars.get("select", None) is None:
-            self.task_vars["select"] = "last"    
+    #: which medical encounter to return (first/last/all)
+    select: str = "last"
+    
+    #: if query is large according to google cloud api
+    large_query: Optional[bool] = False   
     
     @computed_field
     @property
@@ -33,11 +31,10 @@ class GetMedicalEncounters(GetData):
         Query medical encounters (first/last/all) and update self.output with resulting dataframe
         '''
         '''Runs medical encounters query with given local and self.time_select (first/last/all)'''
-        select = self.task_vars["select"]
-        if select not in ["first", "last", "all", "count"]:
+        if self.select not in ["first", "last", "all", "count"]:
             raise ValueError("Unknown select statement!")
-        if select in ["first", "last"]:
-            match select:
+        if self.select in ["first", "last"]:
+            match self.select:
                 case "last":
                     q_select = "MAX"
                 case "first":
@@ -81,7 +78,7 @@ class GetMedicalEncounters(GetData):
                     GROUP BY person_id
                     )
 
-                    SELECT person_id, {q_select}(date) as {select}_medical_encounters_entry_date
+                    SELECT person_id, {q_select}(date) as {self.select}_medical_encounters_entry_date
                     FROM ehr
                     GROUP BY person_id
                 '''
@@ -123,8 +120,8 @@ class GetMedicalEncounters(GetData):
             FROM ehr
             '''
         df = self.env_vars["query_conn"].get_query(query, self.task_name, self.large_query)
-        if select == "count":
+        if self.select == "count":
             df = df.group_by("person_id").len()
         self.output = df        
-        if isinstance(self.output.collect_schema().get(f"{select}_medical_encounters_entry_date"), pl.String):
-            self.output = self.output.with_columns(pl.col(f"{select}_medical_encounters_entry_date").str.to_date("%Y-%m-%d"))
+        if isinstance(self.output.collect_schema().get(f"{self.select}_medical_encounters_entry_date"), pl.String):
+            self.output = self.output.with_columns(pl.col(f"{self.select}_medical_encounters_entry_date").str.to_date("%Y-%m-%d"))
