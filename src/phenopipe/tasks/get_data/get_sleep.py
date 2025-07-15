@@ -30,7 +30,7 @@ class GetSleep(GetData):
                 FROM
                 `sleep_daily_summary` sleep_daily_summary
                 '''
-        self.output = self.env_vars["query_conn"].get_query(query, self.task_name, self.large_query)
+        self.output = self.env_vars["query_conn"].get_query_df(query, self.task_name, self.large_query)
         if isinstance(self.output.collect_schema().get("date"), pl.String):
             self.output = self.output.with_columns(pl.col("date").str.to_date("%Y-%m-%d"))
         

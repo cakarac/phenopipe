@@ -119,7 +119,7 @@ class GetMedicalEncounters(GetData):
             SELECT person_id, date as medical_encounter_entry_date
             FROM ehr
             '''
-        df = self.env_vars["query_conn"].get_query(query, self.task_name, self.large_query)
+        df = self.env_vars["query_conn"].get_query_df(query, self.task_name, self.large_query)
         if self.select == "count":
             df = df.group_by("person_id").len()
         self.output = df        
