@@ -110,4 +110,4 @@ class BigQueryConnection(QueryConnection):
         '''
         query = '''SELECT * FROM `INFORMATION_SCHEMA.COLUMNS`;'''
         _, columns = self.get_query_rows(query)
-        return pl.Schema({col.get("column_name"):BQ_DATA_MAPPING[col.get("data_type")] for col in columns})
+        return pl.Schema({col.get("column_name"):BQ_DATA_MAPPING[col.get("data_type")] for col in columns if col.get("table_name") == table})
