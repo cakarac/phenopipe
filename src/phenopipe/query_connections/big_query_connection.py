@@ -23,7 +23,7 @@ BQ_DATA_MAPPING = {
     "BOOL":pl.Boolean,
     "NUMERIC":pl.Float64,
     "ARRAY<INT64>":pl.List(pl.Int64),
-    "ARRAY<String>":pl.List(pl.String),
+    "ARRAY<STRING>":pl.List(pl.String),
 }
 
 PolarsDataFrame = TypeVar('polars.dataframe.frame.DataFrame')
@@ -100,7 +100,7 @@ class BigQueryConnection(QueryConnection):
         '''
         query = '''SELECT table_name FROM `INFORMATION_SCHEMA.TABLES`;'''
         _, tables = self.get_query_rows(query)
-        return map(lambda x: x.get("table_name"), tables)
+        return list(map(lambda x: x.get("table_name"), tables))
     
     
     def get_table_schema(self, table:str):
