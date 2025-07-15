@@ -18,6 +18,7 @@ BQ_DATA_MAPPING = {
     "INT64":pl.Int64,
     "INT128":pl.Int128,
     "TIMESTAMP":pl.Datetime,
+    "DATETIME":pl.Datetime,
     "DATE":pl.Date ,
     "BOOL":pl.Boolean,
     "NUMERIC":pl.Float64,
