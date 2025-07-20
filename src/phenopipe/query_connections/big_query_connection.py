@@ -6,6 +6,25 @@ import polars as pl
 from phenopipe.bucket import ls_bucket, read_csv_from_bucket
 from .query_connection import QueryConnection
 
+#data type mapping between big query tables and polars. not intended to be full list only to cover most recent aou dataset.
+BQ_DATA_MAPPING = {
+    "STRING":pl.String,
+    "FLOAT64":pl.Float64,
+    "FLOAT32":pl.Float32,
+    "INT8":pl.Int8,
+    "INT16":pl.Int16,
+    "INT32":pl.Int32,
+    "INT64":pl.Int64,
+    "INT128":pl.Int128,
+    "TIMESTAMP":pl.Datetime(),
+    "DATETIME":pl.Datetime(),
+    "DATE":pl.Date,
+    "BOOL":pl.Boolean,
+    "NUMERIC":pl.Float64,
+    "ARRAY<INT64>":pl.List(pl.Int64),
+    "ARRAY<STRING>":pl.List(pl.String),
+}
+
 PolarsDataFrame = TypeVar('polars.dataframe.frame.DataFrame')
 PolarsLazyFrame = TypeVar('polars.lazyframe.frame.LazyFrame')
 
@@ -34,7 +53,19 @@ class BigQueryConnection(QueryConnection):
     #: cached output
     cached_output: PolarsDataFrame|PolarsLazyFrame = None
 
-    def get_query(self,
+    def get_query_rows(self, query: str, return_df: bool = False):
+        '''
+        Runs the given query and returns the client and bigquery iterator
+        :param query: Query string to run with google big query.
+        '''
+        client = bigquery.Client()
+        res = client.query_and_wait(query, job_config = bigquery.job.QueryJobConfig(default_dataset= self.default_dataset))
+        if return_df:
+            return res
+        else:
+            return pl.from_arrow(res.to_arrow())
+    
+    def get_query_df(self,
                 query: str,
                 query_name:str,
                 large_query:bool) -> pl.DataFrame:
@@ -65,3 +96,21 @@ class BigQueryConnection(QueryConnection):
             return pl.scan(local)
         else:
             return pl.from_arrow(res.to_arrow())
+
+    def get_table_names(self):
+        '''
+        Get table names from the default dataset
+        '''
+        query = '''SELECT table_name FROM `INFORMATION_SCHEMA.TABLES`;'''
+        tables = self.get_query_rows(query)
+        return list(map(lambda x: x.get("table_name"), tables))
+    
+    
+    def get_table_schema(self, table:str):
+        '''
+        Gets te column names and datatypes of the given table
+        :param table: Table name to get columns from
+        '''
+        query = '''SELECT * FROM `INFORMATION_SCHEMA.COLUMNS`;'''
+        columns = self.get_query_rows(query)
+        return pl.Schema({col.get("column_name"):BQ_DATA_MAPPING[col.get("data_type")] for col in columns if col.get("table_name") == table})
