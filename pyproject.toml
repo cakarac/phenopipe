@@ -16,6 +16,9 @@ dependencies = [
     "pyyaml (>=6.0.2,<7.0.0)"
 ]
 
+[project.optional-dependencies]
+databricks = [ "databricks-connect>=13.3,<13.4", "spark" ]
+
 [tool.poetry]
 
 [tool.poetry.group.dev.dependencies]

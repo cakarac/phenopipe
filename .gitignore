@@ -1,4 +1,7 @@
+.databricks/
 poetry.lock
 .venv/
 dist/
-*__pycache__/
+build/
+__pycache__/
+/logs
