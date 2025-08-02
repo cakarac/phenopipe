@@ -27,8 +27,8 @@ def write_csv_to_bucket(dat: pl.DataFrame,
     else:
         target_folder = "/".join(file.split("/")[:-1])
     file_name = file.split("/")[-1]
-    if not os.path.isdir("bucket_io"):
-        os.makedirs("bucket_io")
+    if not os.path.isdir("bucket_io/tmp"):
+        os.makedirs("bucket_io/tmp")
     if not chunk_number:
         dat.write_csv(f'bucket_io/tmp/{file}')
         copy_to_bucket(f'bucket_io/tmp/{file}', target_folder=target_folder, nested = False, bucket_id=bucket_id)

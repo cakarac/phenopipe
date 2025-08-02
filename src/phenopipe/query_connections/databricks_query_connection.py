@@ -1,10 +1,9 @@
 import os
+from typing import TypeVar, Optional, Callable
 import polars as pl
 from databricks.connect import DatabricksSession
+from pydantic import PrivateAttr
 from .query_connection import QueryConnection
-
-from typing import TypeVar, Optional
-from subprocess import CalledProcessError
 
 PolarsDataFrame = TypeVar('polars.dataframe.frame.DataFrame')
 PolarsLazyFrame = TypeVar('polars.lazyframe.frame.LazyFrame')
@@ -17,7 +16,7 @@ class DatabricksQueryConnection(QueryConnection):
     host: Optional[str] = os.getenv("DATABRICKS_HOST")
         
     #: databricks token
-    token:Optional[str] = os.getenv("DATABRICKS_TOKEN")
+    _token:Optional[str] = PrivateAttr(os.getenv("DATABRICKS_TOKEN"))
 
     #defult databricks catalog
     default_catalog:Optional[str] = os.getenv("DATABRICKS_DEFAULT_CATALOG")
@@ -25,8 +24,23 @@ class DatabricksQueryConnection(QueryConnection):
     #defult databricks catalog
     default_database:Optional[str] = os.getenv("DATABRICKS_DEFAULT_DATABASE")
 
+    #: function to check cache availability
+    cache_ls_func: Optional[Callable] = lambda x: None
+    
+    #: function to cache data
+    cache_read_func: Optional[Callable] = lambda x: None
+    
+    #: function to cache data
+    cache_write_func: Optional[Callable] = lambda x, y: None
+
     #limit the query rows
     limit:Optional[int] = -1
+    def get_cache(self, 
+                local:str, 
+                client = None,
+                lazy: Optional[bool] = False):
+        return None
+    
     def get_query_df(self,
                 query: str,
                 *args,**kwargs) -> pl.DataFrame:
@@ -49,7 +63,7 @@ class DatabricksQueryConnection(QueryConnection):
         '''
         spark = DatabricksSession.builder.remote(
             host=self.host,
-            token=self.token,
+            token=self._token,
             cluster_id=self.cluster_id).getOrCreate()
         spark.catalog.setCurrentCatalog(self.default_catalog)
         spark.catalog.setCurrentDatabase(self.default_database)

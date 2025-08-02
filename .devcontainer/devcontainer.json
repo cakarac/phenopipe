@@ -4,6 +4,13 @@
 		"context": "..",
 		"dockerfile": "Dockerfile"
 	},
+	"containerEnv": {
+		"DATABRICKS_HOST": "${localEnv:DATABRICKS_HOST}",
+		"DATABRICKS_TOKEN": "${localEnv:DATABRICKS_TOKEN}",
+		"DATABRICKS_CLUSTER":"${localEnv:DATABRICKS_CLUSTER}",
+		"DATABRICKS_DEFAULT_CATALOG":"${localEnv:DATABRICKS_DEFAULT_CATALOG}",
+		"DATABRICKS_DEFAULT_DATABASE":"${localEnv:DATABRICKS_DEFAULT_DATABASE}"
+	},
 	"customizations": {
 		"vscode": {
 			"extensions": ["ms-python.python"]
