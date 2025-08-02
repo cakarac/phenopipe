@@ -1,6 +1,6 @@
 [project]
 name = "phenopipe"
-version = "0.3.0a2"
+version = "0.4.0a1"
 description = ""
 authors = [
     {name = "cakarac",email = "cakar.adnancihan@gmail.com"}
