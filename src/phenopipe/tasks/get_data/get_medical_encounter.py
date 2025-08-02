@@ -1,36 +1,24 @@
-from typing import Optional
 import inflection
-import polars as pl
 from pydantic import computed_field
 from phenopipe.tasks.get_data.get_data import GetData
 from phenopipe.tasks.task import completion
 
-from typing import Optional, Any
-import inflection
-import polars as pl
-from pydantic import computed_field
-from phenopipe.tasks.get_data.get_data import GetData
-from phenopipe.tasks.task import completion
-
-class GetMedicalEncounters(GetData):
+class GetMedicalEncounter(GetData):
     
     #: which medical encounter to return (first/last/all)
     select: str = "last"
-    
-    #: if query is large according to google cloud api
-    large_query: Optional[bool] = False   
-    
+
     @computed_field
     @property
     def task_name(self) -> str:
-        return inflection.underscore(f'{self.__class__.__name__}_{self.task_vars["select"]}')
+        return inflection.underscore(f'{self.__class__.__name__}_{self.select}')
     
     @completion
     def complete(self):
         '''
-        Query medical encounters (first/last/all) and update self.output with resulting dataframe
+        Query medical encounters (first/last) and update self.output with resulting dataframe
         '''
-        '''Runs medical encounters query with given local and self.time_select (first/last/all)'''
+        '''Runs medical encounters query with given local and self.time_select (first/last)'''
         if self.select not in ["first", "last", "all", "count"]:
             raise ValueError("Unknown select statement!")
         if self.select in ["first", "last"]:
@@ -78,7 +66,7 @@ class GetMedicalEncounters(GetData):
                     GROUP BY person_id
                     )
 
-                    SELECT person_id, {q_select}(date) as {self.select}_medical_encounters_entry_date
+                    SELECT person_id, {q_select}(date) as {self.select}_medical_encounter_entry_date
                     FROM ehr
                     GROUP BY person_id
                 '''
@@ -119,9 +107,15 @@ class GetMedicalEncounters(GetData):
             SELECT person_id, date as medical_encounter_entry_date
             FROM ehr
             '''
-        df = self.env_vars["query_conn"].get_query(query, self.task_name, self.large_query)
+        df = self.env_vars["query_conn"].get_query_df(query, 
+                                                    self.task_name, 
+                                                    self.lazy,
+                                                    self.cache,
+                                                    self.cache_local)
         if self.select == "count":
             df = df.group_by("person_id").len()
         self.output = df        
-        if isinstance(self.output.collect_schema().get(f"{self.select}_medical_encounters_entry_date"), pl.String):
-            self.output = self.output.with_columns(pl.col(f"{self.select}_medical_encounters_entry_date").str.to_date("%Y-%m-%d"))
+    
+    def set_output_dtypes_and_names(self):
+        self.set_date_column_dtype(f"{self.select}_medical_encounter_entry_date")
+    

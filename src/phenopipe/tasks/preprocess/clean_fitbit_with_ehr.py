@@ -1,5 +1,4 @@
 import datetime
-import polars as pl
 from phenopipe.tasks.preprocess import CleanFitbit
 from phenopipe.tasks.task import completion
 from phenopipe.desc_funcs import summarize_n
@@ -24,7 +23,7 @@ class CleanFitbitWithEhr(CleanFitbit):
          - fitbit: daily activity dataframe with columns (at least) person_id, date, steps
          - demographics: demographics dataframe with columns (at least) person_id, date_of_birth
          - wear_time: wear_time dataframe with columns (at least) person_id, date, wear_time
-         - medical_encounters_last: last medical encounters dataframe with columns (at least) person_id
+         - medical_encounter_last: last medical encounters dataframe with columns (at least) person_id
         Output:
         -------
          - cleaned daily activity summary dataframe subsetted with cohort with medical encounters
@@ -34,6 +33,6 @@ class CleanFitbitWithEhr(CleanFitbit):
         super().complete()
         
         print("\nRemoving records with no medical encounters")
-        lme = self.inputs["last_medical_encounters"]
+        lme = self.inputs["last_medical_encounter"]
         self.output = self.output.join(lme.select("person_id"), on=["person_id"])
         summarize_n(self.output)
