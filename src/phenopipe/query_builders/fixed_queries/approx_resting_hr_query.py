@@ -1,4 +1,4 @@
-APPROX_RESTING_HR_QUERY='''
+APPROX_RESTING_HR_QUERY = """
 WITH step_tb AS 
             (
                 SELECT person_id, 
@@ -26,4 +26,4 @@ WITH step_tb AS
                                    s.date = h.date           AND 
                                    s.minute_interval = h.minute_interval)
             GROUP BY s.person_id, s.date
-'''
+"""

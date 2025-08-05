@@ -1,4 +1,4 @@
-BMI_QUERY='''
+BMI_QUERY = """
 SELECT
             measurement.person_id,
             measurement.measurement_date AS measurement_date,
@@ -42,4 +42,4 @@ SELECT
                             )
                     )
                 ) measurement
-'''
+"""

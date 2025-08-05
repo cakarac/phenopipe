@@ -1,4 +1,4 @@
-HR_QUERY='''
+HR_QUERY = """
 SELECT
         heart_rate_summary.person_id,
         heart_rate_summary.date,
@@ -8,4 +8,4 @@ SELECT
         heart_rate_summary.minute_in_zone
 FROM
         heart_rate_summary
-'''
+"""

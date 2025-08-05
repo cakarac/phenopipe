@@ -1,4 +1,4 @@
-HEIGHT_QUERY='''
+HEIGHT_QUERY = """
 SELECT
             measurement.person_id,
             measurement.measurement_date,
@@ -46,4 +46,4 @@ SELECT
             LEFT JOIN
                 `concept` m_unit
                     ON measurement.unit_concept_id = m_unit.concept_id
-'''
+"""

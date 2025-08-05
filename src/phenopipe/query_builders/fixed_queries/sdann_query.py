@@ -1,4 +1,4 @@
-SDANN_QUERY='''
+SDANN_QUERY = """
 SELECT person_id,
             sdann_date,
             STDDEV(avg_rr) AS sdann_value,
@@ -18,4 +18,4 @@ SELECT person_id,
             HAVING valid_interval = 1
         )
         GROUP BY person_id, sdann_date
-'''
+"""

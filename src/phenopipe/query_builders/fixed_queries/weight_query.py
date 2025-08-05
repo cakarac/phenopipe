@@ -1,9 +1,9 @@
-WEIGHT_QUERY='''
+WEIGHT_QUERY = """
 SELECT
             measurement.person_id,
             measurement.measurement_date as weight_entry_date,
-            measurement.value_as_number as weight,
-            m_unit.concept_name as unit_concept_name
+            measurement.value_as_number as weight_value,
+            m_unit.concept_name as weight_unit
         FROM
             ( SELECT
                 *
@@ -46,4 +46,4 @@ SELECT
                 LEFT JOIN
                 `concept` m_unit
                     ON measurement.unit_concept_id = m_unit.concept_id
-'''
+"""

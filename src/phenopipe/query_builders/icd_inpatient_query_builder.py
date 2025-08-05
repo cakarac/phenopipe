@@ -2,9 +2,10 @@ from phenopipe.vocab.concepts.condition_type import INPATIENT_HEADERS
 from phenopipe.vocab.concepts.visits import INPATIENT_OR_EMERGENCY
 from .icd_clause_builder import icd_clause
 
-def icd_inpatient_query(icd_codes:dict[str, list]):
-    icd9, icd10  = icd_clause(icd_codes=icd_codes)
-    query = f'''
+
+def icd_inpatient_query(icd_codes: dict[str, list]):
+    icd9, icd10 = icd_clause(icd_codes=icd_codes)
+    query = f"""
             SELECT co.person_id,co.condition_start_date,co.condition_source_value
             FROM
                 `condition_occurrence` co
@@ -18,5 +19,5 @@ def icd_inpatient_query(icd_codes:dict[str, list]):
                 ({icd9} OR {icd10}) AND
                 (co.condition_type_concept_id IN ({",".join(INPATIENT_HEADERS)}) OR
                 v.visit_concept_id IN ({",".join(INPATIENT_OR_EMERGENCY)}))
-            '''
+            """
     return query

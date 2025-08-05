@@ -1,4 +1,4 @@
-HIGH_BP_QUERY='''
+HIGH_BP_QUERY = """
 WITH diatb AS (SELECT
         person_id, measurement_datetime, value_as_number AS dia
         FROM `measurement` m
@@ -19,4 +19,4 @@ WITH diatb AS (SELECT
     AND sys >= 140
     AND dia >= 90
     GROUP BY d.person_id
-'''
+"""
