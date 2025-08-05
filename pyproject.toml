@@ -23,6 +23,7 @@ databricks = [ "databricks-connect>=13.3,<13.4", "spark" ]
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.4.1"
+ruff = "^0.12.7"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

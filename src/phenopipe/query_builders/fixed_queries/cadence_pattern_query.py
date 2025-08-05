@@ -1,4 +1,4 @@
-CADENCE_PATTERN_QUERY='''
+CADENCE_PATTERN_QUERY = """
 WITH sleep_table AS (
             SELECT person_id, 
                 end_sleep, 
@@ -41,4 +41,4 @@ WITH sleep_table AS (
         PIVOT (SUM(count) FOR cadence IN ('non_movement','incidental_movement',
         'sporadic_movement','purposeful_movement','slow_walking','medium_walking',
         'brisk_walking','all_faster_ambulation'))
-'''
+"""

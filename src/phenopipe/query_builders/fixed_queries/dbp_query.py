@@ -1,4 +1,4 @@
-DBP_QUERY='''
+DBP_QUERY = """
 SELECT
         measurement.person_id,
         EXTRACT(DATE FROM measurement.measurement_datetime) as measurement_date,
@@ -42,4 +42,4 @@ SELECT
                         )
                 )
             ) measurement
-'''
+"""

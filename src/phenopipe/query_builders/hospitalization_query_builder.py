@@ -1,13 +1,15 @@
 from typing import List, Optional
 
-def hospitalization_query(source_values:Optional[List[str]]=None):
-    
+
+def hospitalization_query(source_values: Optional[List[str]] = None):
     if source_values is None:
         source_values_str = "1=1"
     else:
-        source_values_str = " OR ".join([f"c.condition_source_value LIKE '{sv}'" for sv in source_values])
+        source_values_str = " OR ".join(
+            [f"c.condition_source_value LIKE '{sv}'" for sv in source_values]
+        )
 
-    query = f'''
+    query = f"""
             SELECT  co.person_id,
                     vo.visit_start_date AS hospitalization_entry_date,
                     co.condition_source_value AS hospitalization_icd_code
@@ -23,5 +25,5 @@ def hospitalization_query(source_values:Optional[List[str]]=None):
                     (co.condition_type_concept_id = 38000200 OR co.condition_status_concept_id = 4230359)
                 ) AND
                 ({source_values_str})
-            '''
+            """
     return query

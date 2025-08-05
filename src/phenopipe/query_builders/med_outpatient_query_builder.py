@@ -1,12 +1,14 @@
 from typing import List, Optional
 from phenopipe.vocab.concepts.visits import OUTPATIENT
 
-def med_outpatient_query(med_names:Optional[List[str]]=None):
-    
-    med_names_str = " OR ".join([f"lower(c.concept_name) LIKE '{mn}'" for mn in med_names])
+
+def med_outpatient_query(med_names: Optional[List[str]] = None):
+    med_names_str = " OR ".join(
+        [f"lower(c.concept_name) LIKE '{mn}'" for mn in med_names]
+    )
     visit_types = ", ".join(OUTPATIENT)
-    
-    query = f'''
+
+    query = f"""
             SELECT DISTINCT d.person_id, d.drug_exposure_start_date, c2.concept_name AS record_source
         FROM
         drug_exposure d
@@ -22,5 +24,5 @@ def med_outpatient_query(med_names:Optional[List[str]]=None):
         WHERE
         ({med_names_str}) AND
         v.visit_concept_id IN {visit_types}
-            '''
+            """
     return query

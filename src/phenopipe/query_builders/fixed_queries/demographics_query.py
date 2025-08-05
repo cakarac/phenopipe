@@ -1,4 +1,4 @@
-DEMOGRAPHICS_QUERY='''
+DEMOGRAPHICS_QUERY = """
 SELECT
                         person.person_id,
                         person.birth_datetime as date_of_birth,
@@ -16,4 +16,4 @@ SELECT
                     LEFT JOIN
                         `concept` p_sex_at_birth_concept
                             ON person.sex_at_birth_concept_id = p_sex_at_birth_concept.concept_id
-'''
+"""

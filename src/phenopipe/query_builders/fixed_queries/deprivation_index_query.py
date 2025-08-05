@@ -1,4 +1,4 @@
-DEPRIVATION_INDEX_QUERY='''
+DEPRIVATION_INDEX_QUERY = """
 SELECT
             observation.person_id,
             observation.observation_date AS deprivation_index_entry_date,
@@ -29,4 +29,4 @@ SELECT
                 )
                 AND observation_source_concept_id = 1585250
                 AND observation.value_as_string NOT LIKE 'Res%'
-'''
+"""

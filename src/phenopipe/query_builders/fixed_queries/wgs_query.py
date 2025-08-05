@@ -1,4 +1,4 @@
-WGS_QUERY='''
+WGS_QUERY = """
 SELECT
             person.person_id
         FROM
@@ -16,4 +16,4 @@ SELECT
                             `cb_search_person` p
                         WHERE
                             has_whole_genome_variant = 1
-'''
+"""

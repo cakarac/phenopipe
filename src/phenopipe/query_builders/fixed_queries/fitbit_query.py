@@ -1,4 +1,4 @@
-FITBIT_QUERY='''
+FITBIT_QUERY = """
 SELECT
                     activity_summary.person_id,
                     activity_summary.date,
@@ -9,4 +9,4 @@ SELECT
                     activity_summary.very_active_minutes
                 FROM
                     `activity_summary` activity_summary
-'''
+"""

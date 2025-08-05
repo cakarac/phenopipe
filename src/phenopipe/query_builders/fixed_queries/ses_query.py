@@ -1,4 +1,4 @@
-SES_QUERY='''
+SES_QUERY = """
 SELECT
             observation.person_id,
             observation.observation_datetime,
@@ -23,4 +23,4 @@ SELECT
             '*') - 1) AS INT64) = zip_code.zip3
             AND observation_source_concept_id = 1585250
             AND observation.value_as_string NOT LIKE 'Res%
-'''
+"""

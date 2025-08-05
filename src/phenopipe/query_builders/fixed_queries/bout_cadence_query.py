@@ -1,4 +1,4 @@
-BOUT_CADENCE_QUERY='''
+BOUT_CADENCE_QUERY = """
 SELECT person_id,
 				CAST(datetime AS DATE) as bout_cadence_date,
 				AVG(steps) as bout_cadence_value
@@ -13,4 +13,4 @@ SELECT person_id,
 			DATE_DIFF(nextTimestamp_lead,datetime,minute) <= 1)
 			GROUP BY
 			CAST(datetime AS DATE),person_id
-'''
+"""

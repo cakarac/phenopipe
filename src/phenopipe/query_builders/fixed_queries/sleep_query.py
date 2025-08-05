@@ -1,4 +1,4 @@
-SLEEP_QUERY='''
+SLEEP_QUERY = """
 SELECT
                   sleep_daily_summary.person_id
                 , sleep_daily_summary.sleep_date as date
@@ -14,4 +14,4 @@ SELECT
                 , sleep_daily_summary.minute_wake
                 FROM
                 `sleep_daily_summary` sleep_daily_summary
-'''
+"""

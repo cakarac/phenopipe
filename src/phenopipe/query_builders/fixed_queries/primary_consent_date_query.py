@@ -1,4 +1,4 @@
-PRIMARY_CONSENT_DATE_QUERY='''
+PRIMARY_CONSENT_DATE_QUERY = """
 SELECT DISTINCT
             person_id,
             MIN(observation_date) AS primary_consent_date
@@ -7,4 +7,4 @@ SELECT DISTINCT
             JOIN `observation` on descendant_concept_id = observation_source_concept_id
             WHERE concept_name = 'Consent PII' AND concept_class_id = 'Module'
             GROUP BY 1
-'''
+"""

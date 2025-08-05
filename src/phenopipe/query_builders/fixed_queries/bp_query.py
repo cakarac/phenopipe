@@ -1,4 +1,4 @@
-BP_QUERY='''
+BP_QUERY = """
 
 WITH diatb AS (SELECT
             person_id, measurement_datetime, value_as_number AS bp_diastolic
@@ -20,4 +20,4 @@ WITH diatb AS (SELECT
         ON (d.person_id = s.person_id)
         WHERE
         d.measurement_datetime = s.measurement_datetime
-'''
+"""
