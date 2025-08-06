@@ -1,14 +1,8 @@
-from typing import List, Optional
+from typing import List, Optional, Dict
+from .icd_clause_builder import icd_clause
 
-
-def hospitalization_query(source_values: Optional[List[str]] = None):
-    if source_values is None:
-        source_values_str = "1=1"
-    else:
-        source_values_str = " OR ".join(
-            [f"c.condition_source_value LIKE '{sv}'" for sv in source_values]
-        )
-
+def hospitalization_query(icd_codes: Optional[Dict[str, List[str]]] = None):
+    icd9, icd10 = icd_clause(icd_codes=icd_codes)
     query = f"""
             SELECT  co.person_id,
                     vo.visit_start_date AS hospitalization_entry_date,
@@ -24,6 +18,6 @@ def hospitalization_query(source_values: Optional[List[str]] = None):
                     AND
                     (co.condition_type_concept_id = 38000200 OR co.condition_status_concept_id = 4230359)
                 ) AND
-                ({source_values_str})
+                ({icd9} OR {icd10})
             """
     return query
