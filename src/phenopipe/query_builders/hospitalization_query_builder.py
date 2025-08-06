@@ -1,6 +1,7 @@
 from typing import List, Optional, Dict
 from .icd_clause_builder import icd_clause
 
+
 def hospitalization_query(icd_codes: Optional[Dict[str, List[str]]] = None):
     icd9, icd10 = icd_clause(icd_codes=icd_codes)
     query = f"""

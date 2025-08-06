@@ -1,6 +1,7 @@
-# phenopipe
-Python Functions for Phenotyping and Analysis
+Phenopipe
 ---------------------------------------------
+
+**Python Functions for Phenotyping and Analysis**
 
 Phenopipe is a Python library to automate phenotyping and downstream analysis. Its main development target is All of Us research platform.
 Phenopipe is heavily inspired by and borrowed query definitions from https://github.com/annisjs/aou.phenotyper2 and https://github.com/annisjs/aou.reader 
@@ -34,7 +35,7 @@ Anchor keyword in inputs dictionary is reserved for a data frame defining a sele
 dataframe to be used during subsetting.
 
 ## Templating
-Phenopipe provides a templating structure to define a Pipe object using yaml files (or stings or dictionaries in the same format). The function build_pipe_from_yaml will accept the file name for a yaml. This pipe object example below will collect initial obesity diagnosis where there is a sleep apnea diagnosis in one year window before or after. Each task is given as a absolute import import such as phenopipe.tasks.get_data.phenotype.FirstSleepApneaPt or commonly used modules can be described using modules keyword and relative import can be given such as modules.phenotype.FirstObesityPt for convenience.
+Phenopipe provides a templating structure to define a Pipe object using yaml files (or strings or dictionaries in the same format). The function build_pipe_from_yaml will accept the file name for a yaml. The pipe object obtained using example below will collect initial hypertension diagnosis where there is a heart failure hospitalization in one year window before or after and return with the first heart failure hospitalization date in that window. Each task is given as a absolute import import such as phenopipe.tasks.get_data.hospitalization.FirstHfHospitalizationData or commonly used modules can be described using modules keyword and relative import can be given such as modules.phenotype.HypertensionPt for convenience.
 Query connection will be translated as the camelcase class of the underscored name given in the template. All parameters under the task id will be passed into task init method. The inputs of a task can be other tasks in the plan given by using the identifier.
 
 
@@ -47,11 +48,11 @@ env_vars:
 modules:
   phenotype: phenopipe.tasks.get_data.phenotype
 tasks:
-  first_obesity:
-    task_name: modules.phenotype.FirstObesityPt
+  hypertension:
+    task_name: modules.phenotype.HypertensionPt
     cache_type: std
-  first_sleep_apnea:
-    task_name: phenopipe.tasks.get_data.phenotype.FirstSleepApneaPt
+  first_hf_hospitalization:
+    task_name: phenopipe.tasks.get_data.hospitalization.FirstHfHospitalizationData
     cache_type: std
     inputs:
       anchor: all_newborn_delivery
