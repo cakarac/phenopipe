@@ -9,13 +9,13 @@ from .get_wear_study import GetWearStudy
 from .get_wgs import GetWgs
 
 __all__ = [
-    "GetDeathCause"
-    "GetDeath"
-    "GetDemographics"
-    "GetDeprivationIndex"
-    "GetPrimaryConsentDate"
-    "GetSes"
-    "GetStateOfResidency"
-    "GetWearStudy"
+    "GetDeathCause",
+    "GetDeath",
+    "GetDemographics",
+    "GetDeprivationIndex",
+    "GetPrimaryConsentDate",
+    "GetSes",
+    "GetStateOfResidency",
+    "GetWearStudy",
     "GetWgs"
 ]
