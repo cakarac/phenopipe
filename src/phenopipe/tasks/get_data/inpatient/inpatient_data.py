@@ -11,7 +11,9 @@ class InpatientData(GetData):
         """
         inpatient_query = icd_inpatient_query(self.inp_codes)
 
-        self.output = self.env_vars["query_conn"].get_query_df(inpatient_query)
+        self.output = self.env_vars["query_conn"].get_query_df(
+            inpatient_query,self.task_name, self.lazy, self.cache, self.cache_local
+        )
 
     def set_output_dtypes_and_names(self):
         self.output = self.output.rename(
