@@ -5,6 +5,7 @@ from phenopipe.query_builders import icd_inpatient_query
 
 class InpatientData(GetData):
     cache_type: str = "std"
+
     @completion
     def complete(self):
         """
@@ -13,7 +14,7 @@ class InpatientData(GetData):
         inpatient_query = icd_inpatient_query(self.inp_codes)
 
         self.output = self.env_vars["query_conn"].get_query_rows(
-            inpatient_query,return_df=True
+            inpatient_query, return_df=True
         )
 
     def set_output_dtypes_and_names(self):

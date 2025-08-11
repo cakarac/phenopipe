@@ -1,4 +1,4 @@
-COPD_INP_CODES = {
+COPD_ICDS = {
     "icd9": [
         "491",
         "491.0",
