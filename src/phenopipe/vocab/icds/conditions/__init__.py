@@ -5,6 +5,7 @@ from .copd_vocab import COPD_ICDS
 from .mi_vocab import MI_ICDS
 from .pneumonia_vocab import PNEUMONIA_ICDS
 from .pad_vocab import PAD_ICDS
+from .pnes_vocab import PNES_ICDS
 
 __all__ = [
     "HEART_FAILURE_ICDS",
@@ -13,5 +14,6 @@ __all__ = [
     "COPD_ICDS",
     "MI_ICDS",
     "PNEUMONIA_ICDS",
-    "PAD_ICDS"
+    "PAD_ICDS",
+    "PNES_ICDS",
 ]
