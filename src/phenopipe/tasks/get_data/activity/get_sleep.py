@@ -4,9 +4,7 @@ from phenopipe.query_builders.fixed_queries import SLEEP_QUERY
 
 
 class GetSleep(FixedQuery):
-    #: if query is large according to google cloud api
     large_query: bool = True
-
     query: str = SLEEP_QUERY
 
     def set_output_dtypes_and_names(self):
