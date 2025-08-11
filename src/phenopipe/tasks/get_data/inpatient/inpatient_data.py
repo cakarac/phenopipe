@@ -9,7 +9,7 @@ class InpatientData(GetData):
         """
         Generic class to query inpatient conditions
         """
-        inpatient_query = icd_inpatient_query(self.INP_CODES)
+        inpatient_query = icd_inpatient_query(self.inp_codes)
 
         self.output = self.env_vars["query_conn"].get_query_df(inpatient_query)
 
