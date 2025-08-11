@@ -17,5 +17,5 @@ __all__ = [
     "GetSes",
     "GetStateOfResidency",
     "GetWearStudy",
-    "GetWgs"
+    "GetWgs",
 ]
