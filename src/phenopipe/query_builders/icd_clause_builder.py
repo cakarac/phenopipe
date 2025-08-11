@@ -1,6 +1,6 @@
 def icd_clause(icd_codes: dict[str, list]):
-    icd9 = "1=1"
-    icd10 = "1=1"
+    icd9 = "1<>1"
+    icd10 = "1<>1"
     if icd_codes is not None:
         if icd_codes.get("icd9", None) is not None:
             icd9_clause = " OR ".join(
@@ -18,4 +18,4 @@ def icd_clause(icd_codes: dict[str, list]):
                 ]
             )
             icd10 = f"(c.vocabulary_id LIKE 'ICD10CM' AND ({icd10_clause}))"
-    return icd9, icd10
+    return f'{icd9} OR {icd10}'
