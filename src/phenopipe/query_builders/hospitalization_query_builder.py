@@ -3,7 +3,7 @@ from .icd_clause_builder import icd_clause
 
 
 def hospitalization_query(icd_codes: Optional[Dict[str, List[str]]] = None):
-    icd9, icd10 = icd_clause(icd_codes=icd_codes)
+    icd_str = icd_clause(icd_codes=icd_codes)
     query = f"""
             SELECT  co.person_id,
                     vo.visit_start_date AS hospitalization_entry_date,
@@ -19,6 +19,6 @@ def hospitalization_query(icd_codes: Optional[Dict[str, List[str]]] = None):
                     AND
                     (co.condition_type_concept_id = 38000200 OR co.condition_status_concept_id = 4230359)
                 ) AND
-                ({icd9} OR {icd10})
+                ({icd_str})
             """
     return query
