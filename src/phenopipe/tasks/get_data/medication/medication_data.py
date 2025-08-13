@@ -6,7 +6,7 @@ from phenopipe.query_builders import med_query
 
 class MedicationData(GetData):
     #: if query is large according to google cloud api
-    med_codes: List[str]
+    med_terms: List[str]
 
     @completion
     def complete(self):

@@ -73,7 +73,15 @@ def copy_from_bucket(
             )
         else:
             subprocess.check_output(
-                ["gcloud", "storage", "cp","--no-user-output-enabled", "--gzip-in-flight-all", file, target]
+                [
+                    "gcloud",
+                    "storage",
+                    "cp",
+                    "--no-user-output-enabled",
+                    "--gzip-in-flight-all",
+                    file,
+                    target,
+                ]
             )
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:

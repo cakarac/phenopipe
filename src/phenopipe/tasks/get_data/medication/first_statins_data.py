@@ -6,4 +6,4 @@ from phenopipe.vocab.terms.medications import STATINS_TERMS
 class FirstStatinsData(MedicationData):
     aggregate: str = "first"
     date_col: str = "first_statins_entry_date"
-    med_codes: List[str] = STATINS_TERMS
+    med_terms: List[str] = STATINS_TERMS
