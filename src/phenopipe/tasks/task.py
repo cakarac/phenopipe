@@ -22,7 +22,8 @@ def completion(func):
             self_in.validate_min_inputs_schemas()
             func(*args, **kwargs)
             if (
-                self_in.cache
+                hasattr(self_in, "cache")
+                and self_in.cache
                 and hasattr(self_in, "cache_type")
                 and self_in.cache_type == "std"
             ):

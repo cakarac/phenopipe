@@ -18,4 +18,4 @@ def icd_clause(icd_codes: dict[str, list]):
                 ]
             )
             icd10 = f"(c.vocabulary_id LIKE 'ICD10CM' AND ({icd10_clause}))"
-    return f'{icd9} OR {icd10}'
+    return f"{icd9} OR {icd10}"

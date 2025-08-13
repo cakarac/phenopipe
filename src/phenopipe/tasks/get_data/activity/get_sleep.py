@@ -1,12 +1,11 @@
 import polars as pl
 from phenopipe.tasks.get_data.fixed_query import FixedQuery
+from phenopipe.query_builders.fixed_queries import SLEEP_QUERY
 
 
 class GetSleep(FixedQuery):
-    #: if query is large according to google cloud api
     large_query: bool = True
-
-    query: str = "SLEEP_QUERY"
+    query: str = SLEEP_QUERY
 
     def set_output_dtypes_and_names(self):
         super().set_date_column_dtype("date")
