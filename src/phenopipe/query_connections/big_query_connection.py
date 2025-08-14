@@ -50,7 +50,7 @@ class BigQueryConnection(QueryConnection):
             client = Client()
         try:
             self.cache_ls_func(local, return_list=True)
-            return self.cache_read_func(local, lazy=lazy)
+            return self.cache_read_func(local, lazy=lazy, verbose = not self.large)
         except CalledProcessError:
             return None
 

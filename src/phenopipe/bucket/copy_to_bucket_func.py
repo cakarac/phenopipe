@@ -11,6 +11,7 @@ def copy_to_bucket(
     target_folder: Optional[str] = None,
     nested: Optional[bool] = True,
     bucket_id: Optional[str] = None,
+    verbose: Optional[bool] = True
 ) -> None:
     """Copies file(s) from enviroment workspace to designated bucket folder
 
@@ -80,4 +81,5 @@ def copy_to_bucket(
             except subprocess.CalledProcessError:
                 warnings.warn(f"Failed to copy {f} to {t}")
             else:
-                print(f"Succesfully copied {f} to {t}")
+                if verbose:
+                    print(f"Succesfully copied {f} to {t}")
