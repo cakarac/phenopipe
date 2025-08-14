@@ -9,5 +9,5 @@ __all__ = [
     "FirstCopdHospitalizationData",
     "FirstMiHospitalizationData",
     "FirstPneumoniaHospitalizationData",
-    "AllHospitalizationData"
+    "AllHospitalizationData",
 ]
