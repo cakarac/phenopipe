@@ -3,6 +3,7 @@ from .icd_condition_data import IcdConditionData
 
 
 class AllConditionsData(IcdConditionData):
+    large_query: bool = True
     date_col: str = "condition_start_entry_date"
     icd_codes: Dict[str, List[str]] = None
 
