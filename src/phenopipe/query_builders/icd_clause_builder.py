@@ -1,4 +1,6 @@
 def icd_clause(icd_codes: dict[str, list]):
+    if icd_codes is None:
+        return "1=1"
     icd9 = "1<>1"
     icd10 = "1<>1"
     if icd_codes is not None:
