@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict, Any
 import datetime
 from phenopipe.tasks.get_data.get_data import GetData
 from phenopipe.tasks.task import completion
@@ -9,7 +9,7 @@ class SleepLevelsData(GetData):
     large_query: bool = True
     sleep_levels: List[str]
     sql_aggregation: str = "all"
-    min_output_schema = {
+    min_output_schema: Dict[str, Any] = {
         "person_id": int,
         "is_main_sleep": bool,
         "sleep_date": datetime.date,
