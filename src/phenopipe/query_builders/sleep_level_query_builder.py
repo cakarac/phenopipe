@@ -1,11 +1,11 @@
 from typing import List
 
-def sleep_level_query(levels: List[str], 
-                      sql_aggregation: str = "all"):
+
+def sleep_level_query(levels: List[str], sql_aggregation: str = "all"):
     if isinstance(levels, str):
         levels = [levels]
 
-    levels_str = " OR ".join([f'level = {lev}' for lev in levels])
+    levels_str = " OR ".join([f"level = {lev}" for lev in levels])
     if sql_aggregation == "first":
         ordering = "asc"
     elif sql_aggregation == "last":
@@ -14,7 +14,7 @@ def sleep_level_query(levels: List[str],
         ordering = None
     else:
         raise ValueError("sql_aggregation parameter needs to be first, last or all")
-    
+
     if sql_aggregation == "all":
         query = f"""
             SELECT person_id,

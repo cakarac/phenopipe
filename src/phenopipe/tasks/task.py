@@ -151,17 +151,19 @@ class Task(BaseModel, ABC):
         min_schema = self.min_output_schema
         for k in min_schema:
             match sc[k], min_schema[k]:
-                case [str, int]:
+                case [str(), int()]:
                     self.output = self.output.with_columns(pl.col(k).cast(pl.Int64))
-                case [str, datetime.date]:
+                case [str(), datetime.date]:
                     self.output = self.output.with_columns(pl.col(k).str.to_date())
-                case [str, datetime.datetime]:
+                case [str(), datetime.datetime]:
                     self.output = self.output.with_columns(pl.col(k).str.to_datetime())
                 case [datetime.datetime, datetime.date]:
                     self.output = self.output.with_columns(pl.col(k).dt.date())
-                case [str, bool]:
-                    self.output = self.output.with_columns(pl.col(k).replace_strict({"true": True, "false": False}))
-                    
+                case [str(), bool()]:
+                    self.output = self.output.with_columns(
+                        pl.col(k).replace_strict({"true": True, "false": False})
+                    )
+
     def validate_min_output_schema(self):
         print("Validating the output...")
         sc = self.output.collect_schema().to_python()

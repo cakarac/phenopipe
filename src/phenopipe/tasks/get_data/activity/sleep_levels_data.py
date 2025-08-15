@@ -13,9 +13,10 @@ class SleepLevelsData(GetData):
         "person_id": int,
         "is_main_sleep": bool,
         "sleep_date": datetime.date,
-        "sleep_datetime":datetime.datetime,
-        "sleep_level":str
+        "sleep_datetime": datetime.datetime,
+        "sleep_level": str,
     }
+
     @completion
     def complete(self):
         """
