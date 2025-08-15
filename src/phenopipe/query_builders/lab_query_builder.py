@@ -5,11 +5,8 @@ def lab_query(
     concept_codes: Optional[List[int]] = None, concept_names: Optional[List[str]] = None
 ):
     if concept_codes is None and concept_names is None:
-        return """
-            SELECT person_id, measurement_date, value_as_number, unit_source_value
-            FROM `measurement` m
-            INNER JOIN `concept` c ON (m.measurement_concept_id = c.concept_id)
-        """
+        raise ValueError("Both concept codes and source values cannot be omitted.")
+
     if concept_codes is None:
         codes_str = "1<>1"
     else:
