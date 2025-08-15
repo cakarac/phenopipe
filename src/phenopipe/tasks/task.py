@@ -1,5 +1,6 @@
 import string
 import random
+import datetime
 from functools import wraps
 from abc import ABC, abstractmethod
 from typing import Optional, TypeVar, Any, List
@@ -144,9 +145,28 @@ class Task(BaseModel, ABC):
                 raise ValueError("missing input dataframe")
         return True
 
+    def convert_output_schema(self):
+        print("Trying converting output columns to minimum output schema...")
+        sc = self.output.collect_schema().to_python()
+        min_schema = self.min_output_schema
+        for k in min_schema:
+            match sc[k], min_schema[k]:
+                case [str, int]:
+                    self.output = self.output.with_columns(pl.col(k).cast(pl.Int64))
+                case [str, datetime.date]:
+                    self.output = self.output.with_columns(pl.col(k).str.to_date())
+                case [str, datetime.datetime]:
+                    self.output = self.output.with_columns(pl.col(k).str.to_datetime())
+                case [datetime.datetime, datetime.date]:
+                    self.output = self.output.with_columns(pl.col(k).dt.date())
+                case [str, bool]:
+                    self.output = self.output.with_columns(pl.col(k).replace_strict({"true": True, "false": False}))
+                    
     def validate_min_output_schema(self):
         print("Validating the output...")
         sc = self.output.collect_schema().to_python()
+        if dict(sc, **self.min_output_schema) != sc:
+            self.convert_output_schema()
         if dict(sc, **self.min_output_schema) != sc:
             raise ValueError("minimal output schemas are not satisfied!")
         return True
