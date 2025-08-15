@@ -25,7 +25,7 @@ def sleep_level_query(levels: List[str], sql_aggregation: str = "all"):
                     level AS sleep_level
                 FROM
                     `sleep_level` sleep_level
-                {levels_str}
+                WHERE {levels_str}
         """
     else:
         query = f"""
@@ -38,7 +38,7 @@ def sleep_level_query(levels: List[str], sql_aggregation: str = "all"):
             FROM (SELECT person_id, sleep_date, start_datetime, duration_in_min, is_main_sleep,
                     row_number() over(partition by person_id, sleep_date order by start_datetime {ordering}) as rn
                     FROM sleep_level
-                    {levels_str}) as t1
+                    WHERE {levels_str}) as t1
             WHERE rn = 1
         """
 
