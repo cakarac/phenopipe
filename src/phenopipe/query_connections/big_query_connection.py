@@ -42,7 +42,7 @@ class BigQueryConnection(QueryConnection):
 
     #: function to cache data
     cache_write_func: Optional[Callable] = write_csv_to_bucket
-    
+
     #: either to run caching verbose
     verbose: bool = True
 
@@ -53,7 +53,7 @@ class BigQueryConnection(QueryConnection):
             client = Client()
         try:
             self.cache_ls_func(local, return_list=True)
-            return self.cache_read_func(local, lazy=lazy, verbose = self.verbose)
+            return self.cache_read_func(local, lazy=lazy, verbose=self.verbose)
         except CalledProcessError:
             return None
 

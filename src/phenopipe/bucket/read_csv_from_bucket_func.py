@@ -47,7 +47,11 @@ def read_csv_from_bucket(
         and all([os.path.isfile(f.replace(bucket_id, "bucket_io")) for f in file_list])
     ):
         copy_from_bucket(
-            files=files, target_folder="bucket_io", bucket_id=bucket_id, nested=True, verbose=verbose
+            files=files,
+            target_folder="bucket_io",
+            bucket_id=bucket_id,
+            nested=True,
+            verbose=verbose,
         )
 
     if lazy:

@@ -11,7 +11,7 @@ def copy_from_bucket(
     target_folder: Optional[str] = None,
     nested: Optional[bool] = True,
     bucket_id: Optional[str] = None,
-    verbose: Optional[bool] = True
+    verbose: Optional[bool] = True,
 ) -> None:
     """
     Copies file(s) from specified bucket into the target folder in enviroment workspace.
