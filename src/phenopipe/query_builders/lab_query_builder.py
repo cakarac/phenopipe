@@ -6,6 +6,7 @@ def lab_query(
 ):
     if concept_codes is None and concept_names is None:
         raise ValueError("Both concept codes and source values cannot be omitted.")
+
     if concept_codes is None:
         codes_str = "1<>1"
     else:

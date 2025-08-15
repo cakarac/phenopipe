@@ -33,12 +33,11 @@ class GetData(Task):
         super().model_post_init()
         if self.env_vars.get("query_conn", None) is None:
             self.env_vars["query_conn"] = BigQueryConnection(
-                lazy=self.lazy, cache=self.cache
+                lazy=self.lazy, cache=self.cache, verbose=not self.large_query
             )
-        if hasattr(self, "large_query"):
-            if self.large_query:
-                self.cache_local = (
-                    f"{self.location}/{self.task_name}/{self.task_name}_*.csv"
-                )
-            else:
-                self.cache_local = f"{self.location}/{self.task_name}.csv"
+        if self.large_query:
+            self.cache_local = (
+                f"{self.location}/{self.task_name}/{self.task_name}_*.csv"
+            )
+        else:
+            self.cache_local = f"{self.location}/{self.task_name}.csv"

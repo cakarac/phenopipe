@@ -10,6 +10,7 @@ def read_csv_from_bucket(
     lazy: Optional[bool] = True,
     cache: Optional[bool] = True,
     bucket_id: Optional[str] = None,
+    verbose: Optional[bool] = True,
     **kwargs,
 ) -> pl.DataFrame:
     """Copies and reads csv file(s) from bucket
@@ -46,7 +47,11 @@ def read_csv_from_bucket(
         and all([os.path.isfile(f.replace(bucket_id, "bucket_io")) for f in file_list])
     ):
         copy_from_bucket(
-            files=files, target_folder="bucket_io", bucket_id=bucket_id, nested=True
+            files=files,
+            target_folder="bucket_io",
+            bucket_id=bucket_id,
+            nested=True,
+            verbose=verbose,
         )
 
     if lazy:
