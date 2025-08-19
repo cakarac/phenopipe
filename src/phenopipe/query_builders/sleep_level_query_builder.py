@@ -21,7 +21,7 @@ def sleep_level_query(levels: List[str], sql_aggregation: str = "all"):
                     sleep_date AS sleep_date,
                     start_datetime AS sleep_datetime,
                     duration_in_min AS sleep_duration,
-                    is_main_sleep AS sleep_is_main_sleep,
+                    is_main_sleep AS is_main_sleep,
                     level AS sleep_level
                 FROM
                     `sleep_level` sleep_level
@@ -33,7 +33,7 @@ def sleep_level_query(levels: List[str], sql_aggregation: str = "all"):
                         sleep_date AS sleep_date,
                         start_datetime AS sleep_datetime,
                         duration_in_min AS sleep_duration,
-                        is_main_sleep AS sleep_is_main_sleep,
+                        is_main_sleep AS is_main_sleep,
                         level AS sleep_level
             FROM (SELECT person_id, sleep_date, start_datetime, duration_in_min, is_main_sleep, level,
                     row_number() over(partition by person_id, sleep_date order by start_datetime {ordering}) as rn
