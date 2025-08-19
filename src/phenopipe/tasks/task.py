@@ -150,7 +150,7 @@ class Task(BaseModel, ABC):
         sc = self.output.collect_schema().to_python()
         min_schema = self.min_output_schema
         for k in min_schema:
-            match sc[k], min_schema[k]:
+            match sc[k](), min_schema[k]():
                 case [str(), int()]:
                     self.output = self.output.with_columns(pl.col(k).cast(pl.Int64))
                 case [str(), datetime.date]:
