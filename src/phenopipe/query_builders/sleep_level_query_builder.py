@@ -5,7 +5,7 @@ def sleep_level_query(levels: List[str], sql_aggregation: str = "all"):
     if isinstance(levels, str):
         levels = [levels]
 
-    levels_str = " OR ".join([f"level = {lev}" for lev in levels])
+    levels_str = " OR ".join([f"level = '{lev}'" for lev in levels])
     if sql_aggregation == "first":
         ordering = "asc"
     elif sql_aggregation == "last":
