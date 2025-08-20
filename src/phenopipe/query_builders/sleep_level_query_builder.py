@@ -1,11 +1,15 @@
 from typing import List
 
 
-def sleep_level_query(levels: List[str], sql_aggregation: str = "all"):
+def sleep_level_query(
+    levels: List[str], sql_aggregation: str = "all", is_main_sleep: bool = True
+):
     if isinstance(levels, str):
         levels = [levels]
 
     levels_str = " OR ".join([f"level = '{lev}'" for lev in levels])
+    if is_main_sleep:
+        levels_str = "(" + levels_str + ") AND is_main_sleep = 'true'"
     if sql_aggregation == "first":
         ordering = "asc"
     elif sql_aggregation == "last":

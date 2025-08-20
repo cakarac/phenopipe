@@ -148,7 +148,10 @@ class Task(BaseModel, ABC):
     def convert_output_schema(self):
         print("Trying converting output columns to minimum output schema...")
         sc = self.output.collect_schema()
-        sc = {k:v if not isinstance(v, pl.Datetime) else pl.Datetime for k,v in sc.items()}
+        sc = {
+            k: v if not isinstance(v, pl.Datetime) else pl.Datetime
+            for k, v in sc.items()
+        }
         min_schema = self.min_output_schema
         for k in min_schema:
             match sc[k], min_schema[k]:
@@ -167,10 +170,16 @@ class Task(BaseModel, ABC):
 
     def validate_min_output_schema(self):
         print("Validating the output...")
-        sc = {k:v if not isinstance(v, pl.Datetime) else pl.Datetime for k,v in self.output.collect_schema().items()}
+        sc = {
+            k: v if not isinstance(v, pl.Datetime) else pl.Datetime
+            for k, v in self.output.collect_schema().items()
+        }
         if dict(sc, **self.min_output_schema) != dict(sc):
             self.convert_output_schema()
-        sc = {k:v if not isinstance(v, pl.Datetime) else pl.Datetime for k,v in self.output.collect_schema().items()}
+        sc = {
+            k: v if not isinstance(v, pl.Datetime) else pl.Datetime
+            for k, v in self.output.collect_schema().items()
+        }
         if dict(sc, **self.min_output_schema) != dict(sc):
             raise ValueError("minimal output schemas are not satisfied!")
         return True
