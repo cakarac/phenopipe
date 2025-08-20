@@ -167,9 +167,9 @@ class Task(BaseModel, ABC):
     def validate_min_output_schema(self):
         print("Validating the output...")
         sc = self.output.collect_schema()
-        if dict(sc, **self.min_output_schema) != sc:
+        if dict(sc, **self.min_output_schema) != dict(sc):
             self.convert_output_schema()
-        if dict(sc, **self.min_output_schema) != sc:
+        if dict(sc, **self.min_output_schema) != dict(sc):
             raise ValueError("minimal output schemas are not satisfied!")
         return True
 
