@@ -147,26 +147,26 @@ class Task(BaseModel, ABC):
 
     def convert_output_schema(self):
         print("Trying converting output columns to minimum output schema...")
-        sc = self.output.collect_schema().to_python()
+        sc = self.output.collect_schema()
         min_schema = self.min_output_schema
         for k in min_schema:
-            match sc[k](), min_schema[k]():
-                case [str(), int()]:
+            match sc[k], min_schema[k]:
+                case (pl.String, pl.Int64):
                     self.output = self.output.with_columns(pl.col(k).cast(pl.Int64))
-                case [str(), datetime.date]:
+                case (pl.String, pl.Date):
                     self.output = self.output.with_columns(pl.col(k).str.to_date())
-                case [str(), datetime.datetime]:
+                case (pl.String, pl.Datetime):
                     self.output = self.output.with_columns(pl.col(k).str.to_datetime())
-                case [datetime.datetime, datetime.date]:
+                case (pl.Datetime, pl.Date):
                     self.output = self.output.with_columns(pl.col(k).dt.date())
-                case [str(), bool()]:
+                case (pl.String, pl.Boolean):
                     self.output = self.output.with_columns(
                         pl.col(k).replace_strict({"true": True, "false": False})
                     )
 
     def validate_min_output_schema(self):
         print("Validating the output...")
-        sc = self.output.collect_schema().to_python()
+        sc = self.output.collect_schema()
         if dict(sc, **self.min_output_schema) != sc:
             self.convert_output_schema()
         if dict(sc, **self.min_output_schema) != sc:

@@ -1,5 +1,6 @@
 from typing import List, Dict, Any
 import datetime
+import polars as pl
 from phenopipe.tasks.get_data.get_data import GetData
 from phenopipe.tasks.task import completion
 from phenopipe.query_builders import sleep_level_query
@@ -10,11 +11,11 @@ class SleepLevelsData(GetData):
     sleep_levels: List[str]
     sql_aggregation: str = "all"
     min_output_schema: Dict[str, Any] = {
-        "person_id": int,
-        "is_main_sleep": bool,
-        "sleep_date": datetime.date,
-        "sleep_datetime": datetime.datetime,
-        "sleep_level": str,
+        "person_id": pl.Int64,
+        "is_main_sleep": pl.Boolean,
+        "sleep_date": pl.Date,
+        "sleep_datetime": pl.Datetime,
+        "sleep_level": pl.String,
     }
 
     @completion
