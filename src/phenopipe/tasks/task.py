@@ -1,5 +1,6 @@
 import string
 import random
+import datetime
 from functools import wraps
 from abc import ABC, abstractmethod
 from typing import Optional, TypeVar, Any, List
@@ -144,10 +145,42 @@ class Task(BaseModel, ABC):
                 raise ValueError("missing input dataframe")
         return True
 
+    def convert_output_schema(self):
+        print("Trying converting output columns to minimum output schema...")
+        sc = self.output.collect_schema()
+        sc = {
+            k: v if not isinstance(v, pl.Datetime) else pl.Datetime
+            for k, v in sc.items()
+        }
+        min_schema = self.min_output_schema
+        for k in min_schema:
+            match sc[k], min_schema[k]:
+                case (pl.String, pl.Int64):
+                    self.output = self.output.with_columns(pl.col(k).cast(pl.Int64))
+                case (pl.String, pl.Date):
+                    self.output = self.output.with_columns(pl.col(k).str.to_date())
+                case (pl.String, pl.Datetime):
+                    self.output = self.output.with_columns(pl.col(k).str.to_datetime())
+                case (pl.Datetime, pl.Date):
+                    self.output = self.output.with_columns(pl.col(k).dt.date())
+                case (pl.String, pl.Boolean):
+                    self.output = self.output.with_columns(
+                        pl.col(k).replace_strict({"true": True, "false": False})
+                    )
+
     def validate_min_output_schema(self):
         print("Validating the output...")
-        sc = self.output.collect_schema().to_python()
-        if dict(sc, **self.min_output_schema) != sc:
+        sc = {
+            k: v if not isinstance(v, pl.Datetime) else pl.Datetime
+            for k, v in self.output.collect_schema().items()
+        }
+        if dict(sc, **self.min_output_schema) != dict(sc):
+            self.convert_output_schema()
+        sc = {
+            k: v if not isinstance(v, pl.Datetime) else pl.Datetime
+            for k, v in self.output.collect_schema().items()
+        }
+        if dict(sc, **self.min_output_schema) != dict(sc):
             raise ValueError("minimal output schemas are not satisfied!")
         return True
 
