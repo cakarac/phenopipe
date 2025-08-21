@@ -24,7 +24,9 @@ class SleepLevelsData(GetData):
         """
         Generic icd condition occurance query phenotype
         """
-        sleep_query_to_run = sleep_level_query(self.sleep_levels, self.sql_aggregation, self.is_main_sleep)
+        sleep_query_to_run = sleep_level_query(
+            self.sleep_levels, self.sql_aggregation, self.is_main_sleep
+        )
         self.output = self.env_vars["query_conn"].get_query_df(
             sleep_query_to_run, self.task_name, self.lazy, self.cache, self.cache_local
         )
