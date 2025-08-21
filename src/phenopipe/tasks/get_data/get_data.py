@@ -1,7 +1,7 @@
-from typing import Optional, TypeVar
+from typing import Optional, TypeVar, Dict, List
 from phenopipe.query_connections import BigQueryConnection
 from phenopipe.tasks.task import Task
-
+import warnings
 
 PolarsDataFrame = TypeVar("polars.dataframe.frame.DataFrame")
 PolarsLazyFrame = TypeVar("polars.lazyframe.frame.LazyFrame")
@@ -29,6 +29,11 @@ class GetData(Task):
     #: either to read or scan dataframe
     lazy: Optional[bool] = False
 
+    state: Dict[str, List[str]] = {
+        "aou":"untested",
+        "std_omop": "untested"
+    }
+
     def model_post_init(self, __context__=None):
         super().model_post_init()
         if self.env_vars.get("query_conn", None) is None:
@@ -41,3 +46,9 @@ class GetData(Task):
             )
         else:
             self.cache_local = f"{self.location}/{self.task_name}.csv"
+    def confirm_state(self):
+        state = state[self.env_vars["query_conn"].query_platform]
+        if state == "untested":
+            warnings.warn("This data task is not tested for this platform. Please be cautious that the resulting data may differ from intended query.")
+        if state == "parsed":
+            warnings.warn("This data task is automatically parsed from another library. Please be cautious that the resulting data may differ from intended query.")

@@ -46,6 +46,8 @@ class BigQueryConnection(QueryConnection):
     #: either to run caching verbose
     verbose: bool = True
 
+    query_platform: str = "aou"
+
     def get_cache(
         self, local: str, client: Optional[Client] = None, lazy: Optional[bool] = False
     ):
