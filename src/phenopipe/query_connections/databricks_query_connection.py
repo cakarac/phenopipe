@@ -37,6 +37,8 @@ class DatabricksQueryConnection(QueryConnection):
     # limit the query rows
     limit: Optional[int] = -1
 
+    query_platform: str = "std_omop"
+
     def get_cache(self, local: str, client=None, lazy: Optional[bool] = False):
         return None
 

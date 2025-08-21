@@ -21,6 +21,8 @@ def completion(func):
                 f"Starting completion of {self_in.task_name} with id {self_in.task_id}"
             )
             self_in.validate_min_inputs_schemas()
+            if hasattr(self_in, "state"):
+                self_in.confirm_state()
             func(*args, **kwargs)
             if (
                 hasattr(self_in, "cache")
