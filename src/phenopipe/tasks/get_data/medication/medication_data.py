@@ -13,7 +13,7 @@ class MedicationData(GetData):
         """
         Generic medication query phenotype
         """
-        med_query_to_run = med_query(self.med_codes)
+        med_query_to_run = med_query(self.med_terms)
         self.output = self.env_vars["query_conn"].get_query_df(
             med_query_to_run, self.task_name, self.lazy, self.cache, self.cache_local
         )
