@@ -29,10 +29,7 @@ class GetData(Task):
     #: either to read or scan dataframe
     lazy: Optional[bool] = False
 
-    state: Dict[str, List[str]] = {
-        "aou":"untested",
-        "std_omop": "untested"
-    }
+    state: Dict[str, List[str]] = {"aou": "untested", "std_omop": "untested"}
 
     def model_post_init(self, __context__=None):
         super().model_post_init()
@@ -46,9 +43,14 @@ class GetData(Task):
             )
         else:
             self.cache_local = f"{self.location}/{self.task_name}.csv"
+
     def confirm_state(self):
         state = self.state[self.env_vars["query_conn"].query_platform]
         if state == "untested":
-            warnings.warn("This data task is not tested for this platform. Please be cautious that the resulting data may differ from intended query.")
+            warnings.warn(
+                "This data task is not tested for this platform. Please be cautious that the resulting data may differ from intended query."
+            )
         if state == "parsed":
-            warnings.warn("This data task is automatically parsed from another library. Please be cautious that the resulting data may differ from intended query.")
+            warnings.warn(
+                "This data task is automatically parsed from another library. Please be cautious that the resulting data may differ from intended query."
+            )
