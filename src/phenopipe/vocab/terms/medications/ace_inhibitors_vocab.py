@@ -1,6 +1,5 @@
 ACE_INHIBITORS_TERMS = [
     "fosinopril",
-    "fosinopril sodium",
     "monopril",
     "ramipril",
     "altace",
