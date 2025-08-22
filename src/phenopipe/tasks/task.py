@@ -279,6 +279,7 @@ class Task(BaseModel, ABC):
             self.output = self.output.join(
                 self.inputs["anchor"]
                 .select(self.anchor_pid)
+                .unique(self.anchor_pid)
                 .rename({self.anchor_pid: f"{self.anchor_pid}_right"}),
                 left_on=self.person_col,
                 right_on=f"{self.anchor_pid}_right",
