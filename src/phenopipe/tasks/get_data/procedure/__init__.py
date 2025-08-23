@@ -4,7 +4,6 @@ from .first_total_hip_arthoplasty_data import FirstTotalHipArthoplastyData
 from .first_total_knee_arthoplasty_data import FirstTotalKneeArthoplastyData
 from .all_pci_data import AllPciData
 from .all_thrombolysis_data import AllThrombolysisData
-from .first_total_knee_arthoplasty_data import FirstTotalKneeArthoplastyData
 from .first_cpap_data import FirstCpapData
 from .all_cabg_data import AllCabgData
 from .first_bariatric_surgery_data import FirstBariatricSurgeryData

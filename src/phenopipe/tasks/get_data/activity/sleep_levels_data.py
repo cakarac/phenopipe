@@ -1,5 +1,4 @@
 from typing import List, Dict, Any
-import datetime
 import polars as pl
 from phenopipe.tasks.get_data.get_data import GetData
 from phenopipe.tasks.task import completion

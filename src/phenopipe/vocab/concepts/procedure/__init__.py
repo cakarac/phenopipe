@@ -7,7 +7,6 @@ from .thrombolysis_vocab import THROMBOLYSIS_CODES
 from .cpap_vocab import CPAP_CODES
 from .cabg_vocab import CABG_CODES
 from .bariatric_surgery_vocab import BARIATRIC_SURGERY_CODES
-from .cabg_vocab import CABG_CODES
 
 __all__ = [
     "STENT_CODES",
