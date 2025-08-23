@@ -1,10 +1,10 @@
 LOOP_DIURETICS_TERMS = [
     "bumetanide",
     "bumex",
-    "ethacrynic_acid",
+    "ethacrynic acid",
     "ethacrynate",
     "edecrin",
-    "sodium_edicrin",
+    "sodium edicrin",
     "torsemide",
     "demadex",
     "furosemide",

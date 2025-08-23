@@ -5,7 +5,7 @@ DIURETICS_TERMS = [
     "bumex",
     "torsemide",
     "demadex",
-    "ethacrynic_acid",
+    "ethacrynic acid",
     "edecrin",
     "metolazone",
     "zaroxolyn",

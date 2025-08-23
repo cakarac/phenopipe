@@ -4,7 +4,7 @@ GLP1_MEDS_TERMS = [
     "albiglutide",
     "tanzeum",
     "exenatide",
-    "bydureon_bcise",
+    "bydureon bcise",
     "bydureon",
     "byetta",
     "liraglutide",
