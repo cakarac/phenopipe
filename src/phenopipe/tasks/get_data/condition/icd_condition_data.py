@@ -5,17 +5,17 @@ from phenopipe.query_builders import icd_condition_query
 
 
 class IcdConditionData(GetData):
-    #: if query is large according to google cloud api
     icd_codes: dict[str, List[str]]
+
+    cache_type: str = "std"
 
     @completion
     def complete(self):
         """
         Generic icd condition occurance query phenotype
         """
-        icd_query_to_run = icd_condition_query(self.icd_codes)
-        self.output = self.env_vars["query_conn"].get_query_df(
-            icd_query_to_run, self.task_name, self.lazy, self.cache, self.cache_local
+        self.output = self.env_vars["query_conn"].get_query_rows(
+            icd_condition_query(self.icd_codes), return_df=True
         )
 
     def set_output_dtypes_and_names(self):
