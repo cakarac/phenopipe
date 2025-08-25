@@ -23,6 +23,7 @@ def completion(func):
             if hasattr(self_in, "state"):
                 self_in.confirm_state()
             func(*args, **kwargs)
+            self_in.complete_date_aggregate()
             if (
                 hasattr(self_in, "cache")
                 and self_in.cache
@@ -48,11 +49,10 @@ def completion(func):
             complete_task(self_in)
         self_in.set_output_dtypes_and_names()
         self_in.filter_required_cols()
-        if "anchor" in list(self_in.inputs.keys()):
+        if "anchor" in self_in.inputs:
             self_in.anchor_data()
-        if "anchor" in list(self_in.input_tasks.keys()):
+        if "anchor" in self_in.input_tasks.keys():
             self_in.input_tasks["anchor"].anchored_data.append(self_in)
-        self_in.complete_date_aggregate()
         self_in.validate_min_output_schema()
         self_in.output = self_in.output.unique()
         self_in.completed = True
@@ -137,6 +137,8 @@ class Task(BaseModel, ABC):
 
     def validate_min_inputs_schemas(self):
         print("Validating the inputs...")
+        if self.aggregate == "closest" and "anchor" not in {**self.inputs, **self.input_tasks}:
+            raise ValueError("An anchor table or task need to be given as input for closest aggregate!") 
         for k in self.min_inputs_schemas.keys():
             sc = self.inputs[k].collect_schema().to_python()
             try:
@@ -223,7 +225,7 @@ class Task(BaseModel, ABC):
 
     def date_aggregate_closest(self):
         self.output = (
-            self.output.with_column(
+            self.output.with_columns(
                 (pl.col(self.date) - pl.col("anchor_date"))
                 .dt.total_days()
                 .abs()

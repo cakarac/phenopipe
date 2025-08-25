@@ -4,6 +4,7 @@ from subprocess import CalledProcessError
 from google.cloud.bigquery import Client
 from google.cloud import bigquery
 import polars as pl
+import warnings
 from phenopipe.bucket import ls_bucket, read_csv_from_bucket, write_csv_to_bucket
 from .query_connection import QueryConnection
 
@@ -99,9 +100,13 @@ class BigQueryConnection(QueryConnection):
         res = self.get_query_rows(query=query, return_df=False, client=client)
         print(f"{query_name} is ran!")
         if cache:
-            ex_res = client.extract_table(res._table, f"{self.bucket_id}/{cache_local}")
-            if ex_res.result().done():
-                print(f"Given query is successfully saved into {cache_local}")
+            if res._table:
+                ex_res = client.extract_table(res._table, f"{self.bucket_id}/{cache_local}")
+                if ex_res.result().done():
+                    print(f"Given query is successfully saved into {cache_local}")
+            else:
+                self.cache_write_func(pl.from_arrow(res.to_arrow()), cache_local)
+                warnings.warn(f"Query didn't return any table. Given result is saved into {cache_local}")
         if not lazy:
             return pl.from_arrow(res.to_arrow())
         else:
