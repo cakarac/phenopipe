@@ -8,6 +8,8 @@ from .first_cpap_data import FirstCpapData
 from .all_cabg_data import AllCabgData
 from .first_bariatric_surgery_data import FirstBariatricSurgeryData
 from .first_cabg_data import FirstCabgData
+from .procedure_data import ProcedureData
+
 
 __all__ = [
     "FirstStentData",
@@ -20,4 +22,5 @@ __all__ = [
     "AllCabgData",
     "FirstBariatricSurgeryData",
     "FirstCabgData",
+    "ProcedureData",
 ]
