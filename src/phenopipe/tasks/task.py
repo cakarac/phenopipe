@@ -267,8 +267,8 @@ class Task(BaseModel, ABC):
         match self.aggregate:
             case "all":
                 return None
-            case "closest":
-                if self.anchor_range[0] is None and self.anchor_range[1] is None:
+            case agg if "closest" in agg:
+                if self.anchor_range[0] is not None or self.anchor_range[1] is not None:
                     self.date_aggregate_closest()
             case "first":
                 self.date_aggregate_first(by=by_cols)
@@ -283,7 +283,7 @@ class Task(BaseModel, ABC):
         predicates = [pl.col(self.person_col) == pl.col(f"{self.anchor_pid}_right")]
         time_range_cols = {}
         if self.anchor_range[0] is None and self.anchor_range[1] is None:
-            if self.aggregate == "closest":
+            if "closest" in self.aggregate:
                 self.output = (
                     self.inputs["anchor"]
                     .select(self.anchor_pid, self.anchor_date)
@@ -301,6 +301,7 @@ class Task(BaseModel, ABC):
                         by_right=self.person_col,
                         by_left=f"{self.anchor_pid}_left",
                         coalesce=False,
+                        strategy = self.aggregate.split(":")[-1]
                     )
                 )
                 self.output = self.output.rename(
