@@ -26,7 +26,7 @@ def completion(func):
             self_in.complete_date_aggregate()
             if (
                 hasattr(self_in, "cache")
-                and self_in.cache
+                and (self_in.cache or self_in.cache is None)
                 and hasattr(self_in, "cache_type")
                 and self_in.cache_type == "std"
             ):
@@ -226,7 +226,7 @@ class Task(BaseModel, ABC):
     def date_aggregate_closest(self):
         self.output = (
             self.output.with_columns(
-                (pl.col(self.date) - pl.col("anchor_date"))
+                (pl.col(self.date_col) - pl.col("anchor_date"))
                 .dt.total_days()
                 .abs()
                 .alias("tte")

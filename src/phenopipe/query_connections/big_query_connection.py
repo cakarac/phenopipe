@@ -99,7 +99,7 @@ class BigQueryConnection(QueryConnection):
         client = Client()
         res = self.get_query_rows(query=query, return_df=False, client=client)
         print(f"{query_name} is ran!")
-        if cache:
+        if cache or cache is None:
             if res._table:
                 ex_res = client.extract_table(res._table, f"{self.bucket_id}/{cache_local}")
                 if ex_res.result().done():
