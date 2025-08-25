@@ -1,5 +1,5 @@
 from typing import List, Dict
-from phenopipe.tasks.get_data.procedure import ProcedureData
+from .procedure_data import ProcedureData
 from phenopipe.vocab.concepts.procedure import CABG_CODES
 
 
