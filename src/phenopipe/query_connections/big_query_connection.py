@@ -101,12 +101,16 @@ class BigQueryConnection(QueryConnection):
         print(f"{query_name} is ran!")
         if cache or cache is None:
             if res._table:
-                ex_res = client.extract_table(res._table, f"{self.bucket_id}/{cache_local}")
+                ex_res = client.extract_table(
+                    res._table, f"{self.bucket_id}/{cache_local}"
+                )
                 if ex_res.result().done():
                     print(f"Given query is successfully saved into {cache_local}")
             else:
                 self.cache_write_func(pl.from_arrow(res.to_arrow()), cache_local)
-                warnings.warn(f"Query didn't return any table. Given result is saved into {cache_local}")
+                warnings.warn(
+                    f"Query didn't return any table. Given result is saved into {cache_local}"
+                )
         if not lazy:
             return pl.from_arrow(res.to_arrow())
         else:

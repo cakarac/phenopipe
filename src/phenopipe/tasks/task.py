@@ -19,11 +19,19 @@ def completion(func):
             print(
                 f"Starting completion of {self_in.task_name} with id {self_in.task_id}"
             )
-            self_in.validate_min_inputs_schemas()
             if hasattr(self_in, "state"):
                 self_in.confirm_state()
+            self_in.validate_min_inputs_schemas()
             func(*args, **kwargs)
+            self_in.set_output_dtypes_and_names()
+            self_in.filter_required_cols()
+            if "anchor" in self_in.inputs:
+                self_in.anchor_data()
+            if "anchor" in self_in.input_tasks.keys():
+                self_in.input_tasks["anchor"].anchored_data.append(self_in)
             self_in.complete_date_aggregate()
+            self_in.output = self_in.output.unique()
+            self_in.validate_min_output_schema()
             if (
                 hasattr(self_in, "cache")
                 and (self_in.cache or self_in.cache is None)
@@ -47,14 +55,6 @@ def completion(func):
                 complete_task(self_in)
         else:
             complete_task(self_in)
-        self_in.set_output_dtypes_and_names()
-        self_in.filter_required_cols()
-        if "anchor" in self_in.inputs:
-            self_in.anchor_data()
-        if "anchor" in self_in.input_tasks.keys():
-            self_in.input_tasks["anchor"].anchored_data.append(self_in)
-        self_in.validate_min_output_schema()
-        self_in.output = self_in.output.unique()
         self_in.completed = True
 
     return wrapper
@@ -137,8 +137,13 @@ class Task(BaseModel, ABC):
 
     def validate_min_inputs_schemas(self):
         print("Validating the inputs...")
-        if self.aggregate == "closest" and "anchor" not in {**self.inputs, **self.input_tasks}:
-            raise ValueError("An anchor table or task need to be given as input for closest aggregate!") 
+        if self.aggregate == "closest" and "anchor" not in {
+            **self.inputs,
+            **self.input_tasks,
+        }:
+            raise ValueError(
+                "An anchor table or task need to be given as input for closest aggregate!"
+            )
         for k in self.min_inputs_schemas.keys():
             sc = self.inputs[k].collect_schema().to_python()
             try:
@@ -263,7 +268,8 @@ class Task(BaseModel, ABC):
             case "all":
                 return None
             case "closest":
-                self.date_aggregate_closest()
+                if self.anchor_range[0] is None and self.anchor_range[1] is None:
+                    self.date_aggregate_closest()
             case "first":
                 self.date_aggregate_first(by=by_cols)
             case "last":
@@ -277,16 +283,43 @@ class Task(BaseModel, ABC):
         predicates = [pl.col(self.person_col) == pl.col(f"{self.anchor_pid}_right")]
         time_range_cols = {}
         if self.anchor_range[0] is None and self.anchor_range[1] is None:
-            self.output = self.output.join(
-                self.inputs["anchor"]
-                .select(self.anchor_pid)
-                .unique(self.anchor_pid)
-                .rename({self.anchor_pid: f"{self.anchor_pid}_right"}),
-                left_on=self.person_col,
-                right_on=f"{self.anchor_pid}_right",
-                coalesce=False,
-            )
-            self.output = self.output.rename({f"{self.anchor_pid}_right": "anchor_pid"})
+            if self.aggregate == "closest":
+                self.output = (
+                    self.inputs["anchor"]
+                    .select(self.anchor_pid, self.anchor_date)
+                    .sort(self.anchor_date)
+                    .rename(
+                        {
+                            self.anchor_pid: f"{self.anchor_pid}_left",
+                            self.anchor_date: f"{self.anchor_date}_left",
+                        }
+                    )
+                    .join_asof(
+                        self.output.sort(self.date_col),
+                        right_on=self.date_col,
+                        left_on=f"{self.anchor_date}_left",
+                        by_right=self.person_col,
+                        by_left=f"{self.anchor_pid}_left",
+                        coalesce=False,
+                    )
+                )
+                self.output = self.output.rename(
+                    {f"{self.anchor_pid}_left": "person_id"}
+                )
+                self.output = self.output.rename(
+                    {f"{self.anchor_date}_left": "anchor_date"}
+                )
+            else:
+                self.output = self.output.join(
+                    self.inputs["anchor"]
+                    .select(self.anchor_pid)
+                    .unique(self.anchor_pid)
+                    .rename({self.anchor_pid: f"{self.anchor_pid}_right"}),
+                    left_on=self.person_col,
+                    right_on=f"{self.anchor_pid}_right",
+                    coalesce=False,
+                )
+                self.output = self.output.drop(f"{self.anchor_pid}_right")
         else:
             if self.anchor_range[0] is not None:
                 predicates.append(pl.col(self.date_col) >= pl.col("date_range_start"))
