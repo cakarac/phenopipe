@@ -6,5 +6,5 @@ from phenopipe.vocab.icds.conditions import DEMENTIA_ICDS
 class FirstDementiaData(IcdConditionData):
     aggregate: str = "first"
     date_col: str = "first_dementia_entry_date"
-    lab_terms: List[str] = DEMENTIA_ICDS
+    icd_codes: List[str] = DEMENTIA_ICDS
     state: Dict[str, List[str]] = {"aou": "parsed", "std_omop": "untested"}

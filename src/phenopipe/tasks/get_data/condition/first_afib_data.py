@@ -6,5 +6,5 @@ from phenopipe.vocab.icds.conditions import AFIB_ICDS
 class FirstAfibData(IcdConditionData):
     aggregate: str = "first"
     date_col: str = "first_afib_entry_date"
-    lab_terms: List[str] = AFIB_ICDS
+    icd_codes: List[str] = AFIB_ICDS
     state: Dict[str, List[str]] = {"aou": "parsed", "std_omop": "untested"}

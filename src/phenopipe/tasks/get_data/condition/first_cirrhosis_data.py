@@ -6,5 +6,5 @@ from phenopipe.vocab.icds.conditions import CIRRHOSIS_ICDS
 class FirstCirrhosisData(IcdConditionData):
     aggregate: str = "first"
     date_col: str = "first_cirrhosis_entry_date"
-    lab_terms: List[str] = CIRRHOSIS_ICDS
+    icd_codes: List[str] = CIRRHOSIS_ICDS
     state: Dict[str, List[str]] = {"aou": "parsed", "std_omop": "untested"}

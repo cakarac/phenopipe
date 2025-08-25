@@ -6,5 +6,5 @@ from phenopipe.vocab.icds.conditions import NON_ALCOHOLIC_LIVER_DISEASE_ICDS
 class FirstNonAlcoholicLiverDiseaseData(IcdConditionData):
     aggregate: str = "first"
     date_col: str = "first_non_alcoholic_liver_disease_entry_date"
-    lab_terms: List[str] = NON_ALCOHOLIC_LIVER_DISEASE_ICDS
+    icd_codes: List[str] = NON_ALCOHOLIC_LIVER_DISEASE_ICDS
     state: Dict[str, List[str]] = {"aou": "parsed", "std_omop": "untested"}

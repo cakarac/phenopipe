@@ -6,5 +6,5 @@ from phenopipe.vocab.icds.conditions import INSOMNIA_ICDS
 class FirstInsomniaData(IcdConditionData):
     aggregate: str = "first"
     date_col: str = "first_insomnia_entry_date"
-    lab_terms: List[str] = INSOMNIA_ICDS
+    icd_codes: List[str] = INSOMNIA_ICDS
     state: Dict[str, List[str]] = {"aou": "parsed", "std_omop": "untested"}

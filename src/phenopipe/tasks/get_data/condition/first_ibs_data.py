@@ -6,5 +6,5 @@ from phenopipe.vocab.icds.conditions import IBS_ICDS
 class FirstIbsData(IcdConditionData):
     aggregate: str = "first"
     date_col: str = "first_ibs_entry_date"
-    lab_terms: List[str] = IBS_ICDS
+    icd_codes: List[str] = IBS_ICDS
     state: Dict[str, List[str]] = {"aou": "parsed", "std_omop": "untested"}

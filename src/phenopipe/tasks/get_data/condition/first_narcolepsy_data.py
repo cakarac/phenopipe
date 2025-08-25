@@ -6,5 +6,5 @@ from phenopipe.vocab.icds.conditions import NARCOLEPSY_ICDS
 class FirstNarcolepsyData(IcdConditionData):
     aggregate: str = "first"
     date_col: str = "first_narcolepsy_entry_date"
-    lab_terms: List[str] = NARCOLEPSY_ICDS
+    icd_codes: List[str] = NARCOLEPSY_ICDS
     state: Dict[str, List[str]] = {"aou": "parsed", "std_omop": "untested"}

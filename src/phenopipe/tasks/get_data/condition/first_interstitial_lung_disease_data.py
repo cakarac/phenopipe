@@ -6,5 +6,5 @@ from phenopipe.vocab.icds.conditions import INTERSTITIAL_LUNG_DISEASE_ICDS
 class FirstInterstitialLungDiseaseData(IcdConditionData):
     aggregate: str = "first"
     date_col: str = "first_interstitial_lung_disease_entry_date"
-    lab_terms: List[str] = INTERSTITIAL_LUNG_DISEASE_ICDS
+    icd_codes: List[str] = INTERSTITIAL_LUNG_DISEASE_ICDS
     state: Dict[str, List[str]] = {"aou": "parsed", "std_omop": "untested"}
