@@ -234,12 +234,14 @@ class Task(BaseModel, ABC):
                 (pl.col(self.date_col) - pl.col("anchor_date"))
                 .dt.total_days()
                 .abs()
-                .alias("tte")
+                .alias("tte"),
+                self.output.hash_rows(10,20,30,40).alias("row_hash")
             )
+            .sort("row_hash")
             .group_by(self.person_col, "anchor_date", maintain_order=True)
             .agg(pl.all().bottom_k_by("tte", 1))
             .explode(pl.all().exclude(self.person_col, "anchor_date"))
-        ).drop("tte")
+        ).drop("tte", "row_hash")
 
     def date_aggregate_first(self, by):
         self.output = (
@@ -287,7 +289,7 @@ class Task(BaseModel, ABC):
                 self.output = (
                     self.inputs["anchor"]
                     .select(self.anchor_pid, self.anchor_date)
-                    .sort(self.anchor_date)
+                    .sort(self.anchor_pid, self.anchor_date)
                     .rename(
                         {
                             self.anchor_pid: f"{self.anchor_pid}_left",
@@ -295,7 +297,9 @@ class Task(BaseModel, ABC):
                         }
                     )
                     .join_asof(
-                        self.output.sort(self.date_col),
+                        self.output
+                        .with_columns(row_hash = self.output.hash_rows(10,20,30,40))
+                        .sort(self.person_col, self.date_col, "row_hash"),
                         right_on=self.date_col,
                         left_on=f"{self.anchor_date}_left",
                         by_right=self.person_col,
@@ -303,6 +307,7 @@ class Task(BaseModel, ABC):
                         coalesce=False,
                         strategy = self.aggregate.split(":")[-1]
                     )
+                    .drop("row_hash")
                 )
                 self.output = self.output.rename(
                     {f"{self.anchor_pid}_left": "person_id"}
