@@ -249,16 +249,22 @@ class Task(BaseModel, ABC):
 
     def date_aggregate_first(self, by):
         self.output = (
-            self.output.group_by(*by, maintain_order=True)
+            self.output.with_columns(row_hash=self.output.hash_rows(10, 20, 30, 40))
+            .sort(by + ["row_hash"])
+            .group_by(*by, maintain_order=True)
             .agg(pl.all().bottom_k_by(self.date_col, 1))
             .explode(pl.all().exclude(*by))
+            .drop("row_hash")
         )
 
     def date_aggregate_last(self, by):
         self.output = (
-            self.output.group_by(*by, maintain_order=True)
+            self.output.with_columns(row_hash=self.output.hash_rows(10, 20, 30, 40))
+            .sort(by + ["row_hash"])
+            .group_by(*by, maintain_order=True)
             .agg(pl.all().top_k_by(self.date_col, 1))
             .explode(pl.all().exclude(*by))
+            .drop("row_hash")
         )
 
     def complete_date_aggregate(self):
