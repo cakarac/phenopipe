@@ -108,6 +108,8 @@ class Task(BaseModel, ABC):
 
     anchored_data: List[Any] = []
 
+    full_cohort: bool = False
+
     @field_validator("inputs", mode="after")
     @classmethod
     def validate_task_inputs(cls, inputs: dict) -> dict:
@@ -235,7 +237,7 @@ class Task(BaseModel, ABC):
                 .dt.total_days()
                 .abs()
                 .alias("tte"),
-                self.output.hash_rows(10,20,30,40).alias("row_hash")
+                self.output.hash_rows(10, 20, 30, 40).alias("row_hash"),
             )
             .sort("row_hash")
             .group_by(self.person_col, "anchor_date", maintain_order=True)
@@ -297,21 +299,23 @@ class Task(BaseModel, ABC):
                         }
                     )
                     .join_asof(
-                        self.output
-                        .with_columns(row_hash = self.output.hash_rows(10,20,30,40))
-                        .sort(self.person_col, self.date_col, "row_hash"),
+                        self.output.with_columns(
+                            row_hash=self.output.hash_rows(10, 20, 30, 40)
+                        ).sort(self.person_col, self.date_col, "row_hash"),
                         right_on=self.date_col,
                         left_on=f"{self.anchor_date}_left",
                         by_right=self.person_col,
                         by_left=f"{self.anchor_pid}_left",
                         coalesce=False,
-                        strategy = self.aggregate.split(":")[-1]
+                        strategy=self.aggregate.split(":")[-1],
                     )
                     .drop("row_hash")
                 )
+                self.output = self.output.filter(pl.col(self.date_col).is_not_null())
+
                 self.output = self.output.rename(
-                    {f"{self.anchor_pid}_left": "person_id"}
-                )
+                    {f"{self.anchor_pid}_left": self.person_col}
+                ).with_columns(anchor_pid=pl.col(self.person_col))
                 self.output = self.output.rename(
                     {f"{self.anchor_date}_left": "anchor_date"}
                 )
@@ -361,9 +365,9 @@ class Task(BaseModel, ABC):
             )
 
     def set_anchor_cohort(self):
-        if self.anchor_date is None and "anchor" in list(self.input_tasks.keys()):
+        if self.anchor_date is None and "anchor" in self.input_tasks:
             self.anchor_date = self.input_tasks["anchor"].date_col
-        if self.anchor_pid is None and "anchor" in list(self.input_tasks.keys()):
+        if self.anchor_pid is None and "anchor" in self.input_tasks:
             self.anchor_pid = self.input_tasks["anchor"].person_col
 
     def merge_with_anchored_data(self):
@@ -378,6 +382,7 @@ class Task(BaseModel, ABC):
                         left_on=[self.person_col, self.date_col],
                         right_on=["anchor_pid", "anchor_date"],
                         suffix="_" + ad.task_id,
+                        how="left" if self.full_cohort else "inner",
                     )
                 else:
                     self.output = self.output.join(
@@ -385,4 +390,5 @@ class Task(BaseModel, ABC):
                         left_on=self.person_col,
                         right_on="anchor_pid",
                         suffix="_" + ad.task_id,
+                        how="left" if self.full_cohort else "inner",
                     )
