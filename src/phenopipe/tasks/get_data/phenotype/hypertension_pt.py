@@ -1,6 +1,6 @@
 from phenopipe.tasks.get_data.get_data import GetData
 from phenopipe.tasks.task import completion
-from phenopipe.vocab.terms.medications import HYPERTENSION_MEDS
+from phenopipe.vocab.terms.medications import ANTI_HYPERTENSIVES_TERMS
 from phenopipe.query_builders import med_query
 from phenopipe.query_builders.fixed_queries import HIGH_BP_QUERY
 
@@ -15,7 +15,7 @@ class HypertensionPt(GetData):
         """
         Query hypertension phenotype defined as at least 1 medication or 1 hbp record
         """
-        ht_med_query = med_query(HYPERTENSION_MEDS)
+        ht_med_query = med_query(ANTI_HYPERTENSIVES_TERMS)
         ht_med_df = self.env_vars["query_conn"].get_query_rows(
             ht_med_query, return_df=True
         )
