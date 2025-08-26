@@ -50,6 +50,8 @@ def completion(func):
             )
             if res is not None:
                 self_in.output = res
+                self_in.set_output_dtypes_and_names()
+                self_in.validate_min_output_schema()
                 print(f"{self_in.task_name} is cached from {self_in.cache_local}")
             else:
                 complete_task(self_in)
