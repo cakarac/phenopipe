@@ -1,8 +1,9 @@
 import os
-from typing import Optional, Callable
+from typing import Optional
 from subprocess import CalledProcessError
 from google.cloud.bigquery import Client
 from google.cloud import bigquery
+from google.api_core.exceptions import BadRequest
 from pydantic import ConfigDict
 import polars as pl
 import warnings
@@ -103,13 +104,25 @@ class BigQueryConnection(QueryConnection):
             else:
                 cache_id = self.log_dat["query_id"].max()+1
             if res._table:
-                ex_res = client.extract_table(
-                    res._table, f"{self.bucket_id}/{self.cache_loc}/{cache_id}.csv"
-                )
-                if ex_res.result().done():
-                    print(f"Given query is successfully saved into {self.cache_loc}")
-                    write_csv_to_bucket(dat=self.log_dat.vstack(pl.DataFrame({"query_str":[query], "query_id":[cache_id]}, schema_overrides={"query_str":pl.String,"query_id":pl.Int32})), 
-                            file = f'{self.cache_loc}/log_dat.csv', bucket_id = self.bucket_id)
+                try:
+                    ex_res = client.extract_table(
+                        res._table, f"{self.bucket_id}/{self.cache_loc}/{cache_id}.csv"
+                    )
+                    if ex_res.result().done():
+                        print(f"Given query is successfully saved into {self.cache_loc}")
+                        write_csv_to_bucket(dat=self.log_dat.vstack(pl.DataFrame({"query_str":[query], "query_id":[cache_id]}, schema_overrides={"query_str":pl.String,"query_id":pl.Int32})), 
+                                file = f'{self.cache_loc}/log_dat.csv', bucket_id = self.bucket_id)
+                except BadRequest as e:
+                    ex_res = client.extract_table(
+                        res._table, f"{self.bucket_id}/{self.cache_loc}/{cache_id}/*.csv"
+                    )
+                    if ex_res.result().done():
+                        print(f"Given query is successfully saved into {self.cache_loc}")
+                        write_csv_to_bucket(dat=self.log_dat.vstack(pl.DataFrame({"query_str":[query], "query_id":[cache_id]}, schema_overrides={"query_str":pl.String,"query_id":pl.Int32})), 
+                                file = f'{self.cache_loc}/log_dat.csv', bucket_id = self.bucket_id)
+                    warnings.warn(
+                        f"Query cached in shards due to large size."
+                    )
             else:
                 self.save_cache(pl.from_arrow(res.to_arrow()), query, cache_id)
                 warnings.warn(
