@@ -5,7 +5,6 @@ from phenopipe.query_builders import cpt_procedure_query
 
 
 class ProcedureData(GetData):
-    cache_type: str = "std"
     procedure_codes: List[str]
 
     @completion

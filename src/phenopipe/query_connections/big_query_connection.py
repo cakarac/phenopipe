@@ -3,10 +3,12 @@ from typing import Optional, Callable
 from subprocess import CalledProcessError
 from google.cloud.bigquery import Client
 from google.cloud import bigquery
+from pydantic import ConfigDict
 import polars as pl
 import warnings
-from phenopipe.bucket import ls_bucket, read_csv_from_bucket, write_csv_to_bucket
+from phenopipe.bucket import read_csv_from_bucket, write_csv_to_bucket, remove_from_bucket
 from .query_connection import QueryConnection
+import sqlparse
 
 # data type mapping between big query tables and polars. not intended to be full list only to cover most recent aou dataset.
 BQ_DATA_MAPPING = {
@@ -35,87 +37,89 @@ class BigQueryConnection(QueryConnection):
     #: default dataset
     default_dataset: Optional[str] = os.getenv("WORKSPACE_CDR")
 
-    #: function to check cache availability
-    cache_ls_func: Optional[Callable] = ls_bucket
+    #: location of the cache in bucket
+    cache_loc: str = "__phenopipe"
 
-    #: function to cache data
-    cache_read_func: Optional[Callable] = read_csv_from_bucket
-
-    #: function to cache data
-    cache_write_func: Optional[Callable] = write_csv_to_bucket
+    #: either to cache query results
+    cache: bool = True
 
     #: either to run caching verbose
     verbose: bool = True
 
     query_platform: str = "aou"
-
-    def get_cache(
-        self, local: str, client: Optional[Client] = None, lazy: Optional[bool] = False
-    ):
-        if client is None:
-            client = Client()
-        try:
-            self.cache_ls_func(local, return_list=True)
-            return self.cache_read_func(local, lazy=lazy, verbose=self.verbose)
-        except CalledProcessError:
+        
+    log_dat: pl.DataFrame = None
+        
+    model_config = ConfigDict(arbitrary_types_allowed = True)
+    
+    def clear_cache(self):
+        remove_from_bucket(self.cache_loc, recursive=True, bucket_id=self.bucket_id)
+        
+    def remove_cached_query(self, query):
+        query = sqlparse.format(query, keyword_case = "lower", reindent=True)
+        cache_exists = self.check_cache(query)
+        if not cache_exists:
             return None
-
-    def get_query_rows(
-        self, query: str, return_df: bool = False, client: Optional[Client] = None
-    ):
-        """
-        Runs the given query and returns the client and bigquery iterator
-        :param query: Query string to run with google big query.
-        """
-        if client is None:
-            client = Client()
-        res = client.query_and_wait(
-            query,
-            job_config=bigquery.job.QueryJobConfig(
-                default_dataset=self.default_dataset
-            ),
-        )
-        if not return_df:
-            return res
         else:
-            return pl.from_arrow(res.to_arrow())
-
-    def get_query_df(
-        self,
-        query: str,
-        query_name: str,
-        lazy: Optional[bool] = False,
-        cache: Optional[bool] = False,
-        cache_local: Optional[str] = None,
-    ) -> pl.DataFrame:
-        """
-        Runs the given query and saves the resulting dataframe to the given bucket and location and returns the dataframe
-        :param query: Query string to run with google big query.
-        """
-
-        if cache and cache_local is None:
-            raise ValueError("No cache location is given!")
-
+            cache_id = self.log_dat.filter(pl.col("query_str") == query)[0, "query_id"]
+            print(self.log_dat.filter(pl.col("query_id") != cache_id))
+            remove_from_bucket(f'{self.cache_loc}/{cache_id}.csv', recursive=True, bucket_id=self.bucket_id)
+            write_csv_to_bucket(self.log_dat.filter(pl.col("query_id") != cache_id),
+                               f'{self.cache_loc}/log_dat.csv', bucket_id=self.bucket_id)
+    def check_cache(self, query):
+        try:
+            self.log_dat = (read_csv_from_bucket(f'{self.cache_loc}/log_dat.csv', cache=False, lazy=False, bucket_id=self.bucket_id)
+                           .with_columns(pl.col("query_id").cast(pl.Int32)))
+        except CalledProcessError:
+            self.log_dat = pl.DataFrame({"query_str":[], "query_id":[]}, schema_overrides={"query_str":pl.String,"query_id":pl.Int32}) 
+            return False
+        return self.log_dat.filter(pl.col("query_str") == query).shape[0] != 0
+    def get_cache(self, query, lazy):
+        cache_exists = self.check_cache(query)
+        if cache_exists:
+            return read_csv_from_bucket(self.cache_loc + "/" + str(self.log_dat[0, "query_id"]) + ".csv", cache=False, lazy = lazy)
+        else:
+            return None 
+    def save_cache(self, dat, query, cache_id):
+        write_csv_to_bucket(dat=dat, file = f'{self.cache_loc}/{cache_id}.csv', bucket_id = self.bucket_id)
+        write_csv_to_bucket(dat=self.log_dat.vstack(pl.DataFrame({"query_str":[query], "query_id":[cache_id]}, schema_overrides={"query_str":pl.String,"query_id":pl.Int32})), 
+                            file = f'{self.cache_loc}/log_dat.csv', bucket_id = self.bucket_id)
+    def get_query(self, query: str, lazy: bool = False, cache: bool = True):
+        query = sqlparse.format(query, keyword_case = "lower", reindent=True)
+        if self.cache:
+            df = self.get_cache(query, lazy)
+            if df is not None:
+                return df
         client = Client()
-        res = self.get_query_rows(query=query, return_df=False, client=client)
-        print(f"{query_name} is ran!")
-        if cache or cache is None:
+        res = client.query_and_wait(
+                    query,
+                    job_config=bigquery.job.QueryJobConfig(
+                        default_dataset=self.default_dataset
+                    ),
+        )
+        if self.cache:
+            if self.log_dat.shape[0] == 0:
+                cache_id = 0
+            else:
+                cache_id = self.log_dat["query_id"].max()+1
             if res._table:
                 ex_res = client.extract_table(
-                    res._table, f"{self.bucket_id}/{cache_local}"
+                    res._table, f"{self.bucket_id}/{self.cache_loc}/{cache_id}.csv"
                 )
                 if ex_res.result().done():
-                    print(f"Given query is successfully saved into {cache_local}")
+                    print(f"Given query is successfully saved into {self.cache_loc}")
+                    write_csv_to_bucket(dat=self.log_dat.vstack(pl.DataFrame({"query_str":[query], "query_id":[cache_id]}, schema_overrides={"query_str":pl.String,"query_id":pl.Int32})), 
+                            file = f'{self.cache_loc}/log_dat.csv', bucket_id = self.bucket_id)
             else:
-                self.cache_write_func(pl.from_arrow(res.to_arrow()), cache_local)
+                self.save_cache(pl.from_arrow(res.to_arrow()), query, cache_id)
                 warnings.warn(
-                    f"Query didn't return any table. Given result is saved into {cache_local}"
+                    f"Query didn't return any table. Given result is saved into {self.cache_loc}"
                 )
         if not lazy:
             return pl.from_arrow(res.to_arrow())
         else:
             return pl.from_arrow(res.to_arrow()).lazy()
-
+        
     def get_table_names(self):
         """
         Get table names from the default dataset

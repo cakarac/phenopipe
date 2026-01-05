@@ -6,8 +6,6 @@ from phenopipe.query_builders.fixed_queries import HIGH_BP_QUERY
 
 
 class HypertensionPt(GetData):
-    cache_type: str = "std"
-
     date_col: str = "hypertension_entry_date"
 
     @completion

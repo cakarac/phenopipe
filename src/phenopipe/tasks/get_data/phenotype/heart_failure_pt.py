@@ -6,8 +6,6 @@ from phenopipe.query_builders import icd_inpatient_query, icd_outpatient_query
 
 
 class HeartFailurePt(GetData):
-    cache_type: str = "std"
-
     date_col: str = "heart_failure_entry_date"
 
     @completion

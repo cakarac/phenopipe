@@ -14,15 +14,7 @@ PolarsLazyFrame = TypeVar("polars.lazyframe.frame.LazyFrame")
 def completion(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        def complete_task(self_in):
-            self_in.complete_input_tasks()
-            print(
-                f"Starting completion of {self_in.task_name} with id {self_in.task_id}"
-            )
-            if hasattr(self_in, "state"):
-                self_in.confirm_state()
-            self_in.validate_min_inputs_schemas()
-            func(*args, **kwargs)
+        def process_result(self_in):
             self_in.set_output_dtypes_and_names()
             self_in.filter_required_cols()
             if "anchor" in self_in.inputs:
@@ -32,33 +24,20 @@ def completion(func):
             self_in.complete_date_aggregate()
             self_in.output = self_in.output.unique()
             self_in.validate_min_output_schema()
-            if (
-                hasattr(self_in, "cache")
-                and (self_in.cache or self_in.cache is None)
-                and hasattr(self_in, "cache_type")
-                and self_in.cache_type == "std"
-            ):
-                self_in.env_vars["query_conn"].cache_write_func(
-                    self_in.output, self_in.cache_local
-                )
-
+        def complete_task(self_in):
+            self_in.complete_input_tasks()
+            print(
+                f"Starting completion of {self_in.task_name} with id {self_in.task_id}"
+            )
+            if hasattr(self_in, "state"):
+                self_in.confirm_state()
+            self_in.validate_min_inputs_schemas()
+            func(*args, **kwargs)
+            process_result(self_in)
         self_in = args[0]
         self_in.set_anchor_cohort()
-        if hasattr(self_in, "cache") and self_in.cache and len(self_in.inputs) == 0:
-            res = self_in.env_vars["query_conn"].get_cache(
-                local=self_in.cache_local, lazy=self_in.lazy
-            )
-            if res is not None:
-                self_in.output = res
-                self_in.set_output_dtypes_and_names()
-                self_in.validate_min_output_schema()
-                print(f"{self_in.task_name} is cached from {self_in.cache_local}")
-            else:
-                complete_task(self_in)
-        else:
-            complete_task(self_in)
+        complete_task(self_in)
         self_in.completed = True
-
     return wrapper
 
 

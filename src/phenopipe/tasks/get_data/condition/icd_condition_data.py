@@ -7,15 +7,13 @@ from phenopipe.query_builders import icd_condition_query
 class IcdConditionData(GetData):
     icd_codes: dict[str, List[str]]
 
-    cache_type: str = "std"
-
     @completion
     def complete(self):
         """
         Generic icd condition occurance query phenotype
         """
-        self.output = self.env_vars["query_conn"].get_query_rows(
-            icd_condition_query(self.icd_codes), return_df=True
+        self.output = self.env_vars["query_conn"].get_query(
+            icd_condition_query(self.icd_codes), self.lazy
         )
 
     def set_output_dtypes_and_names(self):
