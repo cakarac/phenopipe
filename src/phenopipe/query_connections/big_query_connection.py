@@ -78,7 +78,7 @@ class BigQueryConnection(QueryConnection):
     def get_cache(self, query, lazy):
         cache_exists = self.check_cache(query)
         if cache_exists:
-            return read_csv_from_bucket(self.cache_loc + "/" + str(self.log_dat[0, "query_id"]) + ".csv", cache=False, lazy = lazy)
+            return read_csv_from_bucket(self.cache_loc + "/" + str(self.log_dat.filter(pl.col("query_str") == query)[0, "query_id"]) + ".csv", cache=False, lazy = lazy)
         else:
             return None 
     def save_cache(self, dat, query, cache_id):
