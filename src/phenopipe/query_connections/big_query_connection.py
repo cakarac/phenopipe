@@ -72,7 +72,7 @@ class BigQueryConnection(QueryConnection):
             self.log_dat = (read_csv_from_bucket(f'{self.cache_loc}/log_dat.csv', cache=False, lazy=False, bucket_id=self.bucket_id)
                            .with_columns(pl.col("query_id").cast(pl.Int32)))
         except CalledProcessError:
-            self.log_dat = pl.DataFrame({"query_str":[], "query_id":[]}, schema_overrides={"query_str":pl.String,"query_id":pl.Int32}) 
+            self.log_dat = pl.DataFrame({"query_str":[], "query_id":[], "query_path":[]}, schema_overrides={"query_str":pl.String,"query_id":pl.Int32, "query_path":pl.String}) 
             return False
         return self.log_dat.filter(pl.col("query_str") == query).shape[0] != 0
     def get_cache(self, query, lazy):
@@ -83,7 +83,7 @@ class BigQueryConnection(QueryConnection):
             return None 
     def save_cache(self, dat, query, cache_id):
         write_csv_to_bucket(dat=dat, file = f'{self.cache_loc}/{cache_id}.csv', bucket_id = self.bucket_id)
-        write_csv_to_bucket(dat=self.log_dat.vstack(pl.DataFrame({"query_str":[query], "query_id":[cache_id]}, schema_overrides={"query_str":pl.String,"query_id":pl.Int32})), 
+        write_csv_to_bucket(dat=self.log_dat.vstack(pl.DataFrame({"query_str":[query], "query_id":[cache_id], "query_path": [f"{self.cache_loc}/{cache_id}.csv"]}, schema_overrides={"query_str":pl.String,"query_id":pl.Int32, "query_path":pl.String})), 
                             file = f'{self.cache_loc}/log_dat.csv', bucket_id = self.bucket_id)
     def get_query(self, query: str, lazy: bool = False, cache: bool = True):
         query = sqlparse.format(query, keyword_case = "lower", reindent=True)
@@ -110,7 +110,7 @@ class BigQueryConnection(QueryConnection):
                     )
                     if ex_res.result().done():
                         print(f"Given query is successfully saved into {self.cache_loc}")
-                        write_csv_to_bucket(dat=self.log_dat.vstack(pl.DataFrame({"query_str":[query], "query_id":[cache_id]}, schema_overrides={"query_str":pl.String,"query_id":pl.Int32})), 
+                        write_csv_to_bucket(dat=self.log_dat.vstack(pl.DataFrame({"query_str":[query], "query_id":[cache_id], "query_path": [f"{self.cache_loc}/{cache_id}.csv"]}, schema_overrides={"query_str":pl.String,"query_id":pl.Int32, "query_path":pl.String})), 
                                 file = f'{self.cache_loc}/log_dat.csv', bucket_id = self.bucket_id)
                 except BadRequest as e:
                     ex_res = client.extract_table(
@@ -118,7 +118,7 @@ class BigQueryConnection(QueryConnection):
                     )
                     if ex_res.result().done():
                         print(f"Given query is successfully saved into {self.cache_loc}")
-                        write_csv_to_bucket(dat=self.log_dat.vstack(pl.DataFrame({"query_str":[query], "query_id":[cache_id]}, schema_overrides={"query_str":pl.String,"query_id":pl.Int32})), 
+                        write_csv_to_bucket(dat=self.log_dat.vstack(pl.DataFrame({"query_str":[query], "query_id":[cache_id], "query_path": [f"{self.cache_loc}/{cache_id}/*.csv"]}, schema_overrides={"query_str":pl.String,"query_id":pl.Int32, "query_path":pl.String})), 
                                 file = f'{self.cache_loc}/log_dat.csv', bucket_id = self.bucket_id)
                     warnings.warn(
                         f"Query cached in shards due to large size."
