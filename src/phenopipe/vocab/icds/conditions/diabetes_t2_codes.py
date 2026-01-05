@@ -1,4 +1,4 @@
-DIABETES_T2_CODES = {
+DIABETES_T2_ICDS = {
     "icd9": [
         "250.00",
         "250.02",
