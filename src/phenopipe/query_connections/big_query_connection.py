@@ -78,14 +78,14 @@ class BigQueryConnection(QueryConnection):
     def get_cache(self, query, lazy):
         cache_exists = self.check_cache(query)
         if cache_exists:
-            return read_csv_from_bucket(self.cache_loc + "/" + str(self.log_dat.filter(pl.col("query_str") == query)[0, "query_id"]) + ".csv", cache=False, lazy = lazy)
+            return read_csv_from_bucket(self.log_dat.filter(pl.col("query_str") == query)[0, "query_path"], cache=False, lazy = lazy)
         else:
             return None 
     def save_cache(self, dat, query, cache_id):
         write_csv_to_bucket(dat=dat, file = f'{self.cache_loc}/{cache_id}.csv', bucket_id = self.bucket_id)
         write_csv_to_bucket(dat=self.log_dat.vstack(pl.DataFrame({"query_str":[query], "query_id":[cache_id], "query_path": [f"{self.cache_loc}/{cache_id}.csv"]}, schema_overrides={"query_str":pl.String,"query_id":pl.Int32, "query_path":pl.String})), 
                             file = f'{self.cache_loc}/log_dat.csv', bucket_id = self.bucket_id)
-    def get_query(self, query: str, lazy: bool = False, cache: bool = True):
+    def get_query(self, query: str, lazy: bool = False):
         query = sqlparse.format(query, keyword_case = "lower", reindent=True)
         if self.cache:
             df = self.get_cache(query, lazy)
