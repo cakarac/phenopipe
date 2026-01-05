@@ -13,8 +13,8 @@ class SurveyData(GetData):
         Generic query for survey data
         """
         survey_query_str = survey_query(self.survey_codes)
-        self.output = self.env_vars["query_conn"].get_query_df(
-            survey_query_str, self.task_name, self.lazy, self.cache, self.cache_local
+        self.output = self.env_vars["query_conn"].get_query(
+            survey_query_str, self.lazy
         )
 
     def set_output_dtypes_and_names(self):
