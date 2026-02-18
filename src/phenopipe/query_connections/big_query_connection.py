@@ -56,7 +56,7 @@ class BigQueryConnection(QueryConnection):
     def get_most_recent_cache(self):
         try:
             self.log_dat = (pl.read_csv(f'{self.bucket_id}/{self.cache_loc}/log_dat.csv').with_columns(pl.col("query_id").cast(pl.Int32)))
-        except CalledProcessError:
+        except FileNotFoundError:
             self.log_dat = pl.DataFrame({"query_str":[], "query_id":[], "query_path":[]}, schema_overrides={"query_str":pl.String,"query_id":pl.Int32, "query_path":pl.String}) 
     
     def clear_cache(self):
