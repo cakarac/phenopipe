@@ -80,10 +80,11 @@ class BigQueryConnection(QueryConnection):
         cache_exists = self.check_cache(query)
         if cache_exists.shape[0] > 0:
             cache = cache_exists.to_dicts()[0]
+            dat = pl.scan_csv(f'{self.bucket_id}/{self.cache_loc}/{cache["query_path"]}')
             if lazy:
-                return pl.scan_csv(f'{self.bucket_id}/{self.cache_loc}/{cache["query_path"]}')
+                return dat
             else:
-                return pl.read_csv(f'{self.bucket_id}/{self.cache_loc}/{cache["query_path"]}', storage_options=dict(expand=True))
+                return dat.collect()
         else:
             return None 
     def save_cache(self, dat, query, cache_id):
