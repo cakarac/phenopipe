@@ -100,7 +100,6 @@ class BigQueryConnection(QueryConnection):
         query = sqlparse.format(query, keyword_case = "lower", reindent=True)
         
         if self.cache:
-            
             df = self.get_cache(query, lazy)
             if df is not None:
                 return df
@@ -111,6 +110,7 @@ class BigQueryConnection(QueryConnection):
                         default_dataset=self.default_dataset
                     ),
         )
+        dat = pl.from_arrow(res.to_arrow())
         if self.cache:
             if self.log_dat.shape[0] == 0:
                 cache_id = 0
@@ -141,20 +141,14 @@ class BigQueryConnection(QueryConnection):
                         f"Query cached in shards due to large size."
                     )
             else:
-                dat = pl.from_arrow(res.to_arrow())
                 self.save_cache(dat, query, cache_id)
                 warnings.warn(
                     f"Query didn't return any table. Given result is saved into {self.cache_loc}"
                 )
-                if not lazy:
-                    return dat
-                else:
-                    return dat.lazy()
+        if not lazy:
+            return dat
         else:
-            if not lazy:
-                return pl.from_arrow(res.to_arrow())
-            else:
-                return pl.from_arrow(res.to_arrow()).lazy()
+            return dat.lazy()
     
     def get_table_names(self):
         """
