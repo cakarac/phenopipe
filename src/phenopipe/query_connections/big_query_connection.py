@@ -155,7 +155,7 @@ class BigQueryConnection(QueryConnection):
         Get table names from the default dataset
         """
         query = """SELECT table_name FROM `INFORMATION_SCHEMA.TABLES`;"""
-        tables = self.get_query_rows(query)
+        tables = self.get_query(query)
         return list(map(lambda x: x.get("table_name"), tables))
 
     def get_table_schema(self, table: str):
@@ -164,7 +164,7 @@ class BigQueryConnection(QueryConnection):
         :param table: Table name to get columns from
         """
         query = """SELECT * FROM `INFORMATION_SCHEMA.COLUMNS`;"""
-        columns = self.get_query_rows(query)
+        columns = self.get_query(query)
         return pl.Schema(
             {
                 col.get("column_name"): BQ_DATA_MAPPING[col.get("data_type")]

@@ -16,11 +16,11 @@ class HeartFailurePt(GetData):
         inpatient_query = icd_inpatient_query(HEART_FAILURE_ICDS)
         outpatient_query = icd_outpatient_query(HEART_FAILURE_ICDS)
 
-        inpatient_df = self.env_vars["query_conn"].get_query_rows(
-            inpatient_query, return_df=True
+        inpatient_df = self.env_vars["query_conn"].get_query(
+            inpatient_query
         )
-        outpatient_df = self.env_vars["query_conn"].get_query_rows(
-            outpatient_query, return_df=True
+        outpatient_df = self.env_vars["query_conn"].get_query(
+            outpatient_query
         )
 
         def process_query_df(df, k):
