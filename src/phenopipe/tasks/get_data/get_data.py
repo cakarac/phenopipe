@@ -12,9 +12,6 @@ class GetData(Task):
     Generic class to retrieve data from database.
     """
 
-    #: bucket folder to save the output
-    location: Optional[str] = "phenopipe_wd/datasets"
-
     lazy: Optional[bool] = False
 
     state: Dict[str, List[str]] = {"aou": "untested", "std_omop": "untested"}
