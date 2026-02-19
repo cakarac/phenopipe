@@ -5,7 +5,7 @@ from .get_ef import GetEf
 from .get_sbp import GetSbp
 from .get_sdann import GetSdann
 from .get_all_heights import GetAllHeights
-from .get_all_weight import GetAllWeights
+from .get_all_weights import GetAllWeights
 
 __all__ = [
     "GetBmi",
