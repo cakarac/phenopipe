@@ -31,6 +31,7 @@ class HeartFailurePt(GetData):
             df = df.sort("condition_start_date").unique(
                 ["person_id", "condition_start_date"]
             )
+            df = df.with_columns(pl.col("person_id").cast(pl.String))
             df = (
                 df.group_by("person_id")
                 .agg(pl.col("condition_start_date").sort())
