@@ -12,6 +12,8 @@ from .loop_diuretics_vocab import LOOP_DIURETICS_TERMS
 from .mineralocorticoid_antagonists_vocab import MINERALOCORTICOID_ANTAGONISTS_TERMS
 from .semaglutide_vocab import SEMAGLUTIDE_TERMS
 from .sglt2_inhibitors_vocab import SGLT2_INHIBITORS_TERMS
+from .diabetes_t1_meds import DIABETES_T1_TERMS
+from .diabetes_t2_meds import DIABETES_T2_TERMS
 
 __all__ = [
     "STATINS_TERMS",
@@ -28,4 +30,6 @@ __all__ = [
     "SEMAGLUTIDE_TERMS",
     "SGLT2_INHIBITORS_TERMS",
     "CALCIUM_CHANNEL_BLOCKERS_TERMS",
+    "DIABETES_T1_TERMS",
+    "DIABETES_T2_TERMS",
 ]

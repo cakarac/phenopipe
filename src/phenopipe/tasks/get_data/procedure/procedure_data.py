@@ -5,7 +5,6 @@ from phenopipe.query_builders import cpt_procedure_query
 
 
 class ProcedureData(GetData):
-    cache_type: str = "std"
     procedure_codes: List[str]
 
     @completion
@@ -14,8 +13,8 @@ class ProcedureData(GetData):
         Generic procedure query phenotype
         """
         procedure_query_to_run = cpt_procedure_query(self.procedure_codes)
-        self.output = self.env_vars["query_conn"].get_query_rows(
-            procedure_query_to_run, return_df=True
+        self.output = self.env_vars["query_conn"].get_query(
+            procedure_query_to_run, lazy = self.lazy
         )
 
     def set_output_dtypes_and_names(self):

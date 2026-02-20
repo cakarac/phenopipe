@@ -6,8 +6,6 @@ from phenopipe.query_builders.fixed_queries import HIGH_BP_QUERY
 
 
 class HypertensionPt(GetData):
-    cache_type: str = "std"
-
     date_col: str = "hypertension_entry_date"
 
     @completion
@@ -16,13 +14,13 @@ class HypertensionPt(GetData):
         Query hypertension phenotype defined as at least 1 medication or 1 hbp record
         """
         ht_med_query = med_query(ANTI_HYPERTENSIVES_TERMS)
-        ht_med_df = self.env_vars["query_conn"].get_query_rows(
-            ht_med_query, return_df=True
+        ht_med_df = self.env_vars["query_conn"].get_query(
+            ht_med_query
         )
         ht_med_df = ht_med_df.rename({"drug_exposure_start_date": "entry_date"})
 
-        hbp_df = self.env_vars["query_conn"].get_query_rows(
-            HIGH_BP_QUERY, return_df=True
+        hbp_df = self.env_vars["query_conn"].get_query(
+            HIGH_BP_QUERY
         )
         hbp_df = hbp_df.rename({"measurement_date": "entry_date"})
 

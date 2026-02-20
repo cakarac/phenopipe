@@ -6,16 +6,13 @@ from phenopipe.query_builders import hospitalization_query
 
 class HospitalizationData(GetData):
     hosp_codes: Dict[str, List[str]]
-
-    cache_type: str = "std"
-
     @completion
     def complete(self):
         """
         Generic hospitalization condition occurance query phenotype
         """
-        self.output = self.env_vars["query_conn"].get_query_rows(
-            hospitalization_query(self.hosp_codes), return_df=True
+        self.output = self.env_vars["query_conn"].get_query(
+            hospitalization_query(self.hosp_codes), self.lazy
         )
 
     def set_output_dtypes_and_names(self):

@@ -44,6 +44,9 @@ from .lupus_vocab import LUPUS_ICDS
 from .asthma_vocab import ASTHMA_ICDS
 from .narcolepsy_vocab import NARCOLEPSY_ICDS
 
+from .diabetes_t1_codes import DIABETES_T1_ICDS
+from .diabetes_t2_codes import DIABETES_T2_ICDS
+
 __all__ = [
     "PAD_ICDS",
     "COPD_ICDS",
@@ -90,4 +93,6 @@ __all__ = [
     "OBESITY_ICDS",
     "NARCOLEPSY_ICDS",
     "SLEEP_APNEA_ICDS",
+    "DIABETES_T1_ICDS",
+    "DIABETES_T2_ICDS",
 ]

@@ -35,7 +35,7 @@ from .first_major_depressive_disorder_data import FirstMajorDepressiveDisorderDa
 from .first_pots_data import FirstPotsData
 from .first_diabetic_hhs_data import FirstDiabeticHhsData
 from .first_obesity_data import FirstObesityData
-from .all_conditions import AllConditions
+from .all_conditions import AllConditionsData
 from .first_dementia_data import FirstDementiaData
 from .first_ischemic_stroke_data import FirstIschemicStrokeData
 from .first_asthma_data import FirstAsthmaData
@@ -81,7 +81,7 @@ __all__ = [
     "FirstPotsData",
     "FirstDiabeticHhsData",
     "FirstObesityData",
-    "AllConditions",
+    "AllConditionsData",
     "FirstDementiaData",
     "FirstIschemicStrokeData",
     "FirstAsthmaData",

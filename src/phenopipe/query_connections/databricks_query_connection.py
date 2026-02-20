@@ -8,7 +8,6 @@ from .query_connection import QueryConnection
 PolarsDataFrame = TypeVar("polars.dataframe.frame.DataFrame")
 PolarsLazyFrame = TypeVar("polars.lazyframe.frame.LazyFrame")
 
-
 class DatabricksQueryConnection(QueryConnection):
     #: databricks cluster name
     cluster_id: Optional[str] = os.getenv("DATABRICKS_CLUSTER")
@@ -42,18 +41,8 @@ class DatabricksQueryConnection(QueryConnection):
     def get_cache(self, local: str, client=None, lazy: Optional[bool] = False):
         return None
 
-    def get_query_df(self, query: str, *args, **kwargs) -> pl.DataFrame:
-        """
-        Runs the given query on databricks remote connection and returns the output as polars dataframe
-        :param query: Query string to on databricks
-        """
-        res = self.get_query_rows(query, return_df=False)
-        if self.limit != -1:
-            res = res.limit(self.limit)
-        return pl.from_pandas(res.toPandas())
-
-    def get_query_rows(
-        self, query: str, return_df: bool = False, *args, **kwargs
+    def get_query(
+        self, query: str, *args, **kwargs
     ) -> pl.DataFrame:
         """
         Runs the given query on databricks remote connection and returns the output as polars dataframe
@@ -67,7 +56,4 @@ class DatabricksQueryConnection(QueryConnection):
         res = spark.sql(query)
         if self.limit != -1:
             res = res.limit(self.limit)
-        if return_df:
-            return pl.from_pandas(res.toPandas())
-        else:
-            return res
+        return pl.from_pandas(res.toPandas())

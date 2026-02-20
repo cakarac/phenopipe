@@ -14,8 +14,8 @@ class LabData(GetData):
         Generic lab query phenotype
         """
         lab_query_to_run = lab_query(**self.lab_terms)
-        self.output = self.env_vars["query_conn"].get_query_df(
-            lab_query_to_run, self.task_name, self.lazy, self.cache, self.cache_local
+        self.output = self.env_vars["query_conn"].get_query(
+            lab_query_to_run, self.lazy
         )
 
     def set_output_dtypes_and_names(self):

@@ -6,8 +6,6 @@ from phenopipe.query_builders import icd_inpatient_query, icd_outpatient_query
 
 
 class HeartFailurePt(GetData):
-    cache_type: str = "std"
-
     date_col: str = "heart_failure_entry_date"
 
     @completion
@@ -18,21 +16,22 @@ class HeartFailurePt(GetData):
         inpatient_query = icd_inpatient_query(HEART_FAILURE_ICDS)
         outpatient_query = icd_outpatient_query(HEART_FAILURE_ICDS)
 
-        inpatient_df = self.env_vars["query_conn"].get_query_rows(
-            inpatient_query, return_df=True
+        inpatient_df = self.env_vars["query_conn"].get_query(
+            inpatient_query
         )
-        outpatient_df = self.env_vars["query_conn"].get_query_rows(
-            outpatient_query, return_df=True
+        outpatient_df = self.env_vars["query_conn"].get_query(
+            outpatient_query
         )
 
         def process_query_df(df, k):
             if isinstance(df.collect_schema().get("condition_start_date"), pl.String):
-                df = df.output.with_columns(
+                df = df.with_columns(
                     pl.col("condition_start_date").str.to_date()
                 )
             df = df.sort("condition_start_date").unique(
                 ["person_id", "condition_start_date"]
             )
+            df = df.with_columns(pl.col("person_id").cast(pl.String))
             df = (
                 df.group_by("person_id")
                 .agg(pl.col("condition_start_date").sort())
