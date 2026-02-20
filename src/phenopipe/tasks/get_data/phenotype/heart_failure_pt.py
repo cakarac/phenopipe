@@ -25,7 +25,7 @@ class HeartFailurePt(GetData):
 
         def process_query_df(df, k):
             if isinstance(df.collect_schema().get("condition_start_date"), pl.String):
-                df = df.output.with_columns(
+                df = df.with_columns(
                     pl.col("condition_start_date").str.to_date()
                 )
             df = df.sort("condition_start_date").unique(
