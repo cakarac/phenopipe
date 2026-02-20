@@ -6,6 +6,7 @@ from google.cloud import bigquery
 from google.api_core.exceptions import BadRequest
 from pydantic import ConfigDict
 import polars as pl
+from polars.exceptions import ComputeError
 import warnings
 from phenopipe.bucket import remove_from_bucket
 from .query_connection import QueryConnection
@@ -81,10 +82,13 @@ class BigQueryConnection(QueryConnection):
         if cache_exists.shape[0] > 0:
             cache = cache_exists.to_dicts()[0]
             dat = pl.scan_csv(f'{self.bucket_id}/{self.cache_loc}/{cache["query_path"]}')
-            if lazy:
-                return dat
-            else:
-                return dat.collect()
+            if not lazy:
+                try:
+                    dat = dat.collect()
+                except ComputeError:
+                    print("An issue occured while inferring the schema of cached files so schema inference is omitted!")
+                    dat = pl.scan_csv(f'{self.bucket_id}/{self.cache_loc}/{cache["query_path"]}', infer_schema = False).collect()
+            return dat
         else:
             return None 
     def save_cache(self, dat, query, cache_id):
