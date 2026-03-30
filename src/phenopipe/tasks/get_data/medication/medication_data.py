@@ -1,6 +1,5 @@
 from typing import List
 from phenopipe.tasks.get_data.get_data import GetData
-from phenopipe.tasks.task import completion
 from phenopipe.query_builders import med_query
 
 
@@ -8,8 +7,7 @@ class MedicationData(GetData):
     #: if query is large according to google cloud api
     med_terms: List[str]
 
-    @completion
-    def complete(self):
+    def _complete(self):
         """
         Generic medication query phenotype
         """

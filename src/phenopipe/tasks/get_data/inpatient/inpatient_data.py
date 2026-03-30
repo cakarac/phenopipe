@@ -1,12 +1,10 @@
 from phenopipe.tasks.get_data.get_data import GetData
-from phenopipe.tasks.task import completion
 from phenopipe.query_builders import icd_inpatient_query
 
 
 class InpatientData(GetData):
 
-    @completion
-    def complete(self):
+    def _complete(self):
         """
         Generic class to query inpatient conditions
         """

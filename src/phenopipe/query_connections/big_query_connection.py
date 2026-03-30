@@ -160,7 +160,7 @@ class BigQueryConnection(QueryConnection):
         """
         query = """SELECT table_name FROM `INFORMATION_SCHEMA.TABLES`;"""
         tables = self.get_query(query)
-        return list(map(lambda x: x.get("table_name"), tables))
+        return tables["table_name"].to_list()
 
     def get_table_schema(self, table: str):
         """
@@ -168,11 +168,14 @@ class BigQueryConnection(QueryConnection):
         :param table: Table name to get columns from
         """
         query = """SELECT * FROM `INFORMATION_SCHEMA.COLUMNS`;"""
-        columns = self.get_query(query)
-        return pl.Schema(
-            {
-                col.get("column_name"): BQ_DATA_MAPPING[col.get("data_type")]
-                for col in columns
-                if col.get("table_name") == table
-            }
+        client = Client()
+        columns = client.query_and_wait(
+                    query,
+                    job_config=bigquery.job.QueryJobConfig(
+                        default_dataset=self.default_dataset
+                    ),
         )
+        return pl.from_arrow(
+            columns.to_arrow()
+        ).filter(pl.col("table_name") == table).select("column_name", "data_type")
+

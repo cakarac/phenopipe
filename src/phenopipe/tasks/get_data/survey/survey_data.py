@@ -1,14 +1,12 @@
 from typing import List
 from phenopipe.tasks.get_data.get_data import GetData
-from phenopipe.tasks.task import completion
 from phenopipe.query_builders import survey_query
 
 
 class SurveyData(GetData):
     survey_codes: List[str]
 
-    @completion
-    def complete(self):
+    def _complete(self):
         """
         Generic query for survey data
         """

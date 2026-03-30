@@ -1,14 +1,12 @@
 from typing import List
 from phenopipe.tasks.get_data.get_data import GetData
-from phenopipe.tasks.task import completion
 from phenopipe.query_builders import icd_condition_query
 
 
 class IcdConditionData(GetData):
     icd_codes: dict[str, List[str]]
 
-    @completion
-    def complete(self):
+    def _complete(self):
         """
         Generic icd condition occurance query phenotype
         """

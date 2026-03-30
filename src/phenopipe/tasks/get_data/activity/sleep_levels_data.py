@@ -1,7 +1,6 @@
 from typing import List, Dict, Any
 import polars as pl
 from phenopipe.tasks.get_data.get_data import GetData
-from phenopipe.tasks.task import completion
 from phenopipe.query_builders import sleep_level_query
 
 
@@ -18,8 +17,7 @@ class SleepLevelsData(GetData):
         "sleep_level": pl.String,
     }
 
-    @completion
-    def complete(self):
+    def _complete(self):
         """
         Generic icd condition occurance query phenotype
         """

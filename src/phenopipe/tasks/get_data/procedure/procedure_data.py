@@ -1,14 +1,12 @@
 from typing import List
 from phenopipe.tasks.get_data.get_data import GetData
-from phenopipe.tasks.task import completion
 from phenopipe.query_builders import cpt_procedure_query
 
 
 class ProcedureData(GetData):
     procedure_codes: List[str]
 
-    @completion
-    def complete(self):
+    def _complete(self):
         """
         Generic procedure query phenotype
         """

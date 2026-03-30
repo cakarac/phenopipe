@@ -1,6 +1,5 @@
 import polars as pl
 from phenopipe.tasks.get_data.get_data import GetData
-from phenopipe.tasks.task import completion
 from phenopipe.vocab.icds.conditions import HEART_FAILURE_ICDS
 from phenopipe.query_builders import icd_inpatient_query, icd_outpatient_query
 
@@ -8,8 +7,7 @@ from phenopipe.query_builders import icd_inpatient_query, icd_outpatient_query
 class HeartFailurePt(GetData):
     date_col: str = "heart_failure_entry_date"
 
-    @completion
-    def complete(self):
+    def _complete(self):
         """
         Query heart failure phenotype defined as at least 1 inpatient or 2 outpatient ICD codes
         """

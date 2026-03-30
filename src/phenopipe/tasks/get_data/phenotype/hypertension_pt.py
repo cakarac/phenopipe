@@ -1,5 +1,4 @@
 from phenopipe.tasks.get_data.get_data import GetData
-from phenopipe.tasks.task import completion
 from phenopipe.vocab.terms.medications import ANTI_HYPERTENSIVES_TERMS
 from phenopipe.query_builders import med_query
 from phenopipe.query_builders.fixed_queries import HIGH_BP_QUERY
@@ -8,8 +7,7 @@ from phenopipe.query_builders.fixed_queries import HIGH_BP_QUERY
 class HypertensionPt(GetData):
     date_col: str = "hypertension_entry_date"
 
-    @completion
-    def complete(self):
+    def _complete(self):
         """
         Query hypertension phenotype defined as at least 1 medication or 1 hbp record
         """

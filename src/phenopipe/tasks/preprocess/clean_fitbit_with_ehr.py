@@ -1,6 +1,5 @@
 import datetime
 from phenopipe.tasks.preprocess import CleanFitbit
-from phenopipe.tasks.task import completion
 from phenopipe.desc_funcs import summarize_n
 
 
@@ -12,8 +11,7 @@ class CleanFitbitWithEhr(CleanFitbit):
         "last_medical_encounter": {"person_id": int},
     }
 
-    @completion
-    def complete(self):
+    def _complete(self):
         """
         Clean fitbit daily activity summary dataframe with pre-determined thresholds and subsets with available last medical encounter cohort
         Inputs:
