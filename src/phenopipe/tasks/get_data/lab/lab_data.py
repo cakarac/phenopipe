@@ -8,8 +8,7 @@ class LabData(GetData):
     #: if query is large according to google cloud api
     lab_terms: List[str]
 
-    @completion
-    def complete(self):
+    def _complete(self):
         """
         Generic lab query phenotype
         """

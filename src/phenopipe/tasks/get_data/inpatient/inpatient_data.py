@@ -5,8 +5,7 @@ from phenopipe.query_builders import icd_inpatient_query
 
 class InpatientData(GetData):
 
-    @completion
-    def complete(self):
+    def _complete(self):
         """
         Generic class to query inpatient conditions
         """

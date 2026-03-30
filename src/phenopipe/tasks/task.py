@@ -10,37 +10,6 @@ from pydantic import BaseModel, computed_field, field_validator
 PolarsDataFrame = TypeVar("polars.dataframe.frame.DataFrame")
 PolarsLazyFrame = TypeVar("polars.lazyframe.frame.LazyFrame")
 
-
-def completion(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        def process_result(self_in):
-            self_in.set_output_dtypes_and_names()
-            self_in.filter_required_cols()
-            if "anchor" in self_in.inputs:
-                self_in.anchor_data()
-            if "anchor" in self_in.input_tasks.keys():
-                self_in.input_tasks["anchor"].anchored_data.append(self_in)
-            self_in.complete_date_aggregate()
-            self_in.output = self_in.output.unique()
-            self_in.validate_min_output_schema()
-        def complete_task(self_in):
-            self_in.complete_input_tasks()
-            print(
-                f"Starting completion of {self_in.task_name} with id {self_in.task_id}"
-            )
-            if hasattr(self_in, "state"):
-                self_in.confirm_state()
-            self_in.validate_min_inputs_schemas()
-            func(*args, **kwargs)
-            process_result(self_in)
-        self_in = args[0]
-        self_in.set_anchor_cohort()
-        complete_task(self_in)
-        self_in.completed = True
-    return wrapper
-
-
 class Task(BaseModel, ABC):
     """Generic task class representing one step in analysis."""
 
@@ -379,3 +348,23 @@ class Task(BaseModel, ABC):
                         suffix="_" + ad.task_id,
                         how="left" if self.full_cohort else "inner",
                     )
+    def complete(self):
+        self.set_anchor_cohort()
+        self.complete_input_tasks()
+        print(
+            f"Starting completion of {self.task_name} with id {self.task_id}"
+        )
+        if hasattr(self, "state"):
+            self.confirm_state()
+        self.validate_min_inputs_schemas()
+        self._complete()
+        self.set_output_dtypes_and_names()
+        self.filter_required_cols()
+        if "anchor" in self.inputs:
+            self.anchor_data()
+        if "anchor" in self.input_tasks.keys():
+            self.input_tasks["anchor"].anchored_data.append(self)
+        self.complete_date_aggregate()
+        self.output = self.output.unique()
+        self.validate_min_output_schema()
+        self.completed = True

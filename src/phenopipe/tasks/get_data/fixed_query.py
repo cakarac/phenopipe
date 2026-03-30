@@ -5,8 +5,7 @@ from phenopipe.tasks.task import completion
 class FixedQuery(GetData):
     query: str
 
-    @completion
-    def complete(self):
+    def _complete(self):
         """
         Query a fixed sql query from fixed queries vocabulary and update self.output with resulting dataframe
         """

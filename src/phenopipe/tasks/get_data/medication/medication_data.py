@@ -8,8 +8,7 @@ class MedicationData(GetData):
     #: if query is large according to google cloud api
     med_terms: List[str]
 
-    @completion
-    def complete(self):
+    def _complete(self):
         """
         Generic medication query phenotype
         """

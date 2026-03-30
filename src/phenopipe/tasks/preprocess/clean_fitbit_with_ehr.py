@@ -12,8 +12,7 @@ class CleanFitbitWithEhr(CleanFitbit):
         "last_medical_encounter": {"person_id": int},
     }
 
-    @completion
-    def complete(self):
+    def _complete(self):
         """
         Clean fitbit daily activity summary dataframe with pre-determined thresholds and subsets with available last medical encounter cohort
         Inputs:

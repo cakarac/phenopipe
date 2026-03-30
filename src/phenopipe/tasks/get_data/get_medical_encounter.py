@@ -13,8 +13,7 @@ class GetMedicalEncounter(GetData):
     def task_name(self) -> str:
         return inflection.underscore(f"{self.__class__.__name__}_{self.select}")
 
-    @completion
-    def complete(self):
+    def _complete(self):
         """
         Query medical encounters (first/last) and update self.output with resulting dataframe
         """

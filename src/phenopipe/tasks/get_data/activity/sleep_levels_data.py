@@ -18,8 +18,7 @@ class SleepLevelsData(GetData):
         "sleep_level": pl.String,
     }
 
-    @completion
-    def complete(self):
+    def _complete(self):
         """
         Generic icd condition occurance query phenotype
         """

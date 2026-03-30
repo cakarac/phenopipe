@@ -7,8 +7,7 @@ from phenopipe.query_builders import cpt_procedure_query
 class ProcedureData(GetData):
     procedure_codes: List[str]
 
-    @completion
-    def complete(self):
+    def _complete(self):
         """
         Generic procedure query phenotype
         """

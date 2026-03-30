@@ -16,8 +16,7 @@ class CleanFitbit(Task):
         "wear_time": {"person_id": int, "wear_time": int},
     }
 
-    @completion
-    def complete(self):
+    def _complete(self):
         """
         Clean fitbit daily activity summary dataframe with pre-determined thresholds
         Inputs:

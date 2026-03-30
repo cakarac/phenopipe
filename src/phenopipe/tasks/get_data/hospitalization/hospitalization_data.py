@@ -6,8 +6,7 @@ from phenopipe.query_builders import hospitalization_query
 
 class HospitalizationData(GetData):
     hosp_codes: Dict[str, List[str]]
-    @completion
-    def complete(self):
+    def _complete(self):
         """
         Generic hospitalization condition occurance query phenotype
         """

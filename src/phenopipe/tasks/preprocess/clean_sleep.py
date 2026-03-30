@@ -20,8 +20,7 @@ class CleanSleep(Task):
         "demographics": {"person_id": int, "date_of_birth": datetime.date},
     }
 
-    @completion
-    def complete(self):
+    def _complete(self):
         """
         Clean daily sleep metrics summary dataframe with pre-determined thresholds
         Inputs:

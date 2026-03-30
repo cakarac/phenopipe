@@ -16,8 +16,7 @@ class CleanSleepWithEhr(CleanSleep):
         "last_medical_encounter": {"person_id": int},
     }
 
-    @completion
-    def complete(self):
+    def _complete(self):
         """
         Clean daily sleep metrics summary dataframe with pre-determined thresholds and subset records without last medical encounter
         Inputs:

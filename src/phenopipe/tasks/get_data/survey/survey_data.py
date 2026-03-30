@@ -7,8 +7,7 @@ from phenopipe.query_builders import survey_query
 class SurveyData(GetData):
     survey_codes: List[str]
 
-    @completion
-    def complete(self):
+    def _complete(self):
         """
         Generic query for survey data
         """

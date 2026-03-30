@@ -8,8 +8,7 @@ from phenopipe.query_builders import icd_inpatient_query, icd_outpatient_query
 class HeartFailurePt(GetData):
     date_col: str = "heart_failure_entry_date"
 
-    @completion
-    def complete(self):
+    def _complete(self):
         """
         Query heart failure phenotype defined as at least 1 inpatient or 2 outpatient ICD codes
         """

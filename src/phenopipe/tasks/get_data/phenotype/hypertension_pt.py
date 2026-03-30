@@ -8,8 +8,7 @@ from phenopipe.query_builders.fixed_queries import HIGH_BP_QUERY
 class HypertensionPt(GetData):
     date_col: str = "hypertension_entry_date"
 
-    @completion
-    def complete(self):
+    def _complete(self):
         """
         Query hypertension phenotype defined as at least 1 medication or 1 hbp record
         """
