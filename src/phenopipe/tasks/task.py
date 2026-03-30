@@ -1,6 +1,5 @@
 import string
 import random
-from functools import wraps
 from abc import ABC, abstractmethod
 from typing import Optional, TypeVar, Any, List
 import polars as pl
@@ -348,6 +347,10 @@ class Task(BaseModel, ABC):
                         suffix="_" + ad.task_id,
                         how="left" if self.full_cohort else "inner",
                     )
+    @abstractmethod
+    def _complete(self):
+        pass
+
     def complete(self):
         self.set_anchor_cohort()
         self.complete_input_tasks()
