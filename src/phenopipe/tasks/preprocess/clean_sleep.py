@@ -1,5 +1,6 @@
 import datetime
 import polars as pl
+from phenopipe.tasks.task import Task
 from phenopipe.desc_funcs import summarize_n
 
 
