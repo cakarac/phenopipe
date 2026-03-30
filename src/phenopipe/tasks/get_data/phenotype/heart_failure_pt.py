@@ -1,6 +1,5 @@
 import polars as pl
 from phenopipe.tasks.get_data.get_data import GetData
-from phenopipe.tasks.task import completion
 from phenopipe.vocab.icds.conditions import HEART_FAILURE_ICDS
 from phenopipe.query_builders import icd_inpatient_query, icd_outpatient_query
 

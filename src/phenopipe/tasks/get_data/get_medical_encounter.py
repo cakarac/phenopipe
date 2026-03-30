@@ -1,7 +1,6 @@
 import inflection
 from pydantic import computed_field
 from phenopipe.tasks.get_data.get_data import GetData
-from phenopipe.tasks.task import completion
 
 
 class GetMedicalEncounter(GetData):

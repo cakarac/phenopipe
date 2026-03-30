@@ -1,6 +1,5 @@
 import datetime
 from phenopipe.tasks.preprocess import CleanSleep
-from phenopipe.tasks.task import completion
 from phenopipe.desc_funcs import summarize_n
 
 
