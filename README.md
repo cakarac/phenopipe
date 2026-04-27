@@ -48,25 +48,26 @@ dataframe to be used during subsetting.
 Any task can indicate an aggregate function that will be run after or alongside the anchoring. This can be first, last, closest:nearest, closest:forward, closest:backward. For closest aggregate an anchor needs to be given. Ties are broken randomly but consistently.  
 
 ## Templating
-Phenopipe provides a templating structure to define a Pipe object using yaml files (or strings or dictionaries in the same format). The function build_pipe_from_yaml will accept the file name for a yaml. The pipe object obtained using example below will collect initial hypertension diagnosis where there is a heart failure hospitalization in one year window before or after and return with the first heart failure hospitalization date in that window. Each task is given as a absolute import import such as phenopipe.tasks.get_data.hospitalization.FirstHfHospitalizationData or commonly used modules can be described using modules keyword and relative import can be given such as modules.phenotype.HypertensionPt for convenience.
+Phenopipe provides a templating structure to define a plan using yaml files (or strings or dictionaries in the same format). The function plan_from_yaml will accept the file name for a yaml. The plan obtained using example below will collect initial hypertension diagnosis where there is a heart failure hospitalization in one year window before or after and return with the first heart failure hospitalization date in that window. Each task is given as a absolute import such as phenopipe.tasks.get_data.hospitalization.FirstHfHospitalizationData or commonly used modules can be described using modules keyword and relative import can be given such as modules.phenotype.HypertensionPt for convenience.
 Query connection will be translated as the camelcase class of the underscored name given in the template. All parameters under the task id will be passed into task init method. The inputs of a task can be other tasks in the plan given by using the identifier.
 
 
 ```
 target: examples
-cache: false
-lazy: false
 env_vars:
-  query_conn: big_query_connection
+  query_conn:
+    module: BigQueryConnection
+    params:
+      cache: false
+      cache_loc: __phenopipe
+lazy: false
 modules:
   phenotype: phenopipe.tasks.get_data.phenotype
 tasks:
   hypertension:
     task_name: modules.phenotype.HypertensionPt
-    cache_type: std
   first_hf_hospitalization:
     task_name: phenopipe.tasks.get_data.hospitalization.FirstHfHospitalizationData
-    cache_type: std
     inputs:
       anchor: hypertension
     anchor_range: [-365, 365]
