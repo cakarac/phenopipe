@@ -37,7 +37,7 @@ class BigQueryConnection(QueryConnection):
     bucket_id: Optional[str] = os.getenv("WORKSPACE_BUCKET")
 
     #bucket mount location if available
-    bucket_loc: Optional[str] = os.getenv("WORKSPACE_BUCKET")
+    bucket_loc: Optional[str] = os.getenv("BUCKET_LOC") or os.getenv("WORKSPACE_BUCKET")
 
     #: default dataset
     default_dataset: Optional[str] = os.getenv("WORKSPACE_CDR")
