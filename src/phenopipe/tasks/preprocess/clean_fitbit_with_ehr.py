@@ -26,7 +26,7 @@ class CleanFitbitWithEhr(CleanFitbit):
         """
         if not self.validate_min_inputs_schemas():
             raise ValueError("invalid inputs to clean fitbit data")
-        super().complete()
+        super()._complete()
 
         print("\nRemoving records with no medical encounters")
         lme = self.inputs["last_medical_encounter"]
