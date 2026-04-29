@@ -12,7 +12,7 @@ def plan_from_dict(plan_dict):
     )(**plan_dict.get("query_conn", {}).get("params", {}))
     
     input_mapping = {}
-    modules = {k: import_module(v) for k, v in plan.get("modules", {}).items()}
+    modules = {k: import_module(v) for k, v in plan_dict.get("modules", {}).items()}
     lazy = plan_dict.get("lazy", False)
     tasks = plan_dict["tasks"]
     for task_id, task in tasks.items():
