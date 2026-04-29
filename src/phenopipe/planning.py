@@ -12,7 +12,7 @@ def plan_from_dict(plan_dict):
     )(**plan_dict.get("query_conn", {}).get("params", {}))
     
     input_mapping = {}
-    modules = {k: import_module(v) for k, v in plan["modules"].items()}
+    modules = {k: import_module(v) for k, v in plan.get("modules", {}).items()}
     lazy = plan_dict.get("lazy", False)
     tasks = plan_dict["tasks"]
     for task_id, task in tasks.items():
@@ -34,13 +34,14 @@ def plan_from_dict(plan_dict):
         if hasattr(task_obj, "lazy"):
             task_obj.lazy = lazy
         plan.update({task_id: task_obj})
-    all_inputs = reduce(lambda x,y: x+y, [list(i.values()) for i in input_mapping.values()])
-    input_mapping = {
-        k: {el: plan[w] for el, w in v.items()} for k, v in input_mapping.items()
-    }
-    for tsk, inputs in input_mapping.items():
-        plan[tsk].input_tasks.update(inputs)
-    plan = {k:v for k,v in plan.items() if k not in all_inputs}
+    if input_mapping:
+        all_inputs = reduce(lambda x,y: x+y, [list(i.values()) for i in input_mapping.values()])
+        input_mapping = {
+            k: {el: plan[w] for el, w in v.items()} for k, v in input_mapping.items()
+        }
+        for tsk, inputs in input_mapping.items():
+            plan[tsk].input_tasks.update(inputs)
+        plan = {k:v for k,v in plan.items() if k not in all_inputs}
     return plan
 
 def plan_from_yaml_str(plan_str):
