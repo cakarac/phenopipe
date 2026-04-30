@@ -53,7 +53,6 @@ Query connection will be translated as the camelcase class of the underscored na
 
 
 ```
-target: examples
 env_vars:
   query_conn:
     module: BigQueryConnection
@@ -62,13 +61,35 @@ env_vars:
       cache_loc: __phenopipe
 lazy: false
 modules:
-  phenotype: phenopipe.tasks.get_data.phenotype
+  activity: phenopipe.tasks.get_data.activity 
+  preprocess: phenopipe.tasks.preprocess
 tasks:
-  hypertension:
-    task_name: modules.phenotype.HypertensionPt
-  first_hf_hospitalization:
-    task_name: phenopipe.tasks.get_data.hospitalization.FirstHfHospitalizationData
+  fitbit:
+    name: modules.activity.GetFitbit
+  sleep:
+    name: modules.activity.GetSleep
+  daily_hr:
+    name: modules.activity.GetDailyHr
+  wear_time:
+    name: modules.activity.GetWearTime
+  demographics:
+    name: phenopipe.tasks.get_data.person_info.GetDemographics
+  heart_failure:
+    name: phenopipe.tasks.get_data.phenotype.HeartFailurePt
+  last_medical_encounter:
+    name: phenopipe.tasks.get_data.GetMedicalEncounter
+    select: last        
+  clean_fitbit_w_ehr:
+    name: modules.preprocess.CleanFitbitWithEhr
     inputs:
-      anchor: hypertension
-    anchor_range: [-365, 365]
+      fitbit: fitbit
+      wear_time: wear_time
+      demographics: demographics
+      last_medical_encounter: last_medical_encounter
+  clean_sleep_w_ehr:
+    name: modules.preprocess.CleanSleepWithEhr
+    inputs:
+      sleep: sleep
+      demographics: demographics
+      last_medical_encounter: last_medical_encounter
 ```
