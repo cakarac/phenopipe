@@ -36,6 +36,9 @@ class BigQueryConnection(QueryConnection):
     #: bucket id to save the result
     bucket_id: Optional[str] = os.getenv("WORKSPACE_BUCKET")
 
+    #bucket mount location if available
+    bucket_loc: Optional[str] = os.getenv("BUCKET_LOC") or os.getenv("WORKSPACE_BUCKET")
+
     #: default dataset
     default_dataset: Optional[str] = os.getenv("WORKSPACE_CDR")
 
@@ -56,7 +59,7 @@ class BigQueryConnection(QueryConnection):
     
     def get_most_recent_cache(self):
         try:
-            self.log_dat = (pl.read_csv(f'{self.bucket_id}/{self.cache_loc}/log_dat.csv').with_columns(pl.col("query_id").cast(pl.Int32)))
+            self.log_dat = (pl.read_csv(f'{self.bucket_loc}/{self.cache_loc}/log_dat.csv').with_columns(pl.col("query_id").cast(pl.Int32)))
         except FileNotFoundError:
             self.log_dat = pl.DataFrame({"query_str":[], "query_id":[], "query_path":[]}, schema_overrides={"query_str":pl.String,"query_id":pl.Int32, "query_path":pl.String}) 
     
@@ -72,7 +75,7 @@ class BigQueryConnection(QueryConnection):
             cache_id = self.log_dat.filter(pl.col("query_str") == query)[0, "query_id"]
             print(self.log_dat.filter(pl.col("query_id") != cache_id))
             remove_from_bucket(f'{self.cache_loc}/{cache_id}.csv', recursive=True, bucket_id=self.bucket_id)
-            self.log_dat.filter(pl.col("query_id") != cache_id).write_csv(f'{self.bucket_id}/{self.cache_loc}/log_dat.csv', bucket_id=self.bucket_id)
+            self.log_dat.filter(pl.col("query_id") != cache_id).write_csv(f'{self.bucket_loc}/{self.cache_loc}/log_dat.csv')
     def check_cache(self, query):
         self.get_most_recent_cache()
         return self.log_dat.filter(pl.col("query_str") == query)
@@ -81,24 +84,24 @@ class BigQueryConnection(QueryConnection):
         cache_exists = self.check_cache(query)
         if cache_exists.shape[0] > 0:
             cache = cache_exists.to_dicts()[0]
-            dat = pl.scan_csv(f'{self.bucket_id}/{self.cache_loc}/{cache["query_path"]}')
+            dat = pl.scan_csv(f'{self.bucket_loc}/{self.cache_loc}/{cache["query_path"]}')
             if not lazy:
                 try:
                     dat = dat.collect()
                 except ComputeError:
                     print("An issue occured while inferring the schema of cached files so schema inference is omitted!")
-                    dat = pl.scan_csv(f'{self.bucket_id}/{self.cache_loc}/{cache["query_path"]}', infer_schema = False).collect()
+                    dat = pl.scan_csv(f'{self.bucket_loc}/{self.cache_loc}/{cache["query_path"]}', infer_schema = False).collect()
             return dat
         else:
             return None 
     def save_cache(self, dat, query, cache_id):
         self.get_most_recent_cache()
-        dat.write_csv(file = f'{self.bucket_id}/{self.cache_loc}/{cache_id}.csv')
+        dat.write_csv(file = f'{self.bucket_loc}/{self.cache_loc}/{cache_id}.csv')
         (self.log_dat.vstack(
             pl.DataFrame(
                 {"query_str":[query], "query_id":[cache_id], "query_path": [f"{cache_id}.csv"]}, 
                     schema_overrides={"query_str":pl.String,"query_id":pl.Int32, "query_path":pl.String}))
-                .write_csv(f'{self.bucket_id}/{self.cache_loc}/log_dat.csv')
+                .write_csv(f'{self.bucket_loc}/{self.cache_loc}/log_dat.csv')
         )
     def get_query(self, query: str, lazy: bool = False):
         query = sqlparse.format(query, keyword_case = "lower", reindent=True)
@@ -130,7 +133,7 @@ class BigQueryConnection(QueryConnection):
                         self.log_dat.vstack(
                             pl.DataFrame({"query_str":[query], "query_id":[cache_id], "query_path": [f"{cache_id}.csv"]}, 
                                          schema_overrides={"query_str":pl.String,"query_id":pl.Int32, "query_path":pl.String})
-                            ).write_csv(f'{self.bucket_id}/{self.cache_loc}/log_dat.csv')
+                            ).write_csv(f'{self.bucket_loc}/{self.cache_loc}/log_dat.csv')
                 except BadRequest as e:
                     ex_res = client.extract_table(
                         res._table, f"{self.bucket_id}/{self.cache_loc}/{cache_id}/*.csv"
@@ -140,7 +143,7 @@ class BigQueryConnection(QueryConnection):
                         self.log_dat.vstack(
                             pl.DataFrame({"query_str":[query], "query_id":[cache_id], "query_path": [f"{cache_id}/*.csv"]}, 
                                          schema_overrides={"query_str":pl.String,"query_id":pl.Int32, "query_path":pl.String})
-                            ).write_csv(f'{self.bucket_id}/{self.cache_loc}/log_dat.csv')
+                            ).write_csv(f'{self.bucket_loc}/{self.cache_loc}/log_dat.csv')
                     warnings.warn(
                         f"Query cached in shards due to large size."
                     )

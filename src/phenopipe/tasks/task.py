@@ -352,22 +352,23 @@ class Task(BaseModel, ABC):
         pass
 
     def complete(self):
-        self.set_anchor_cohort()
-        self.complete_input_tasks()
-        print(
-            f"Starting completion of {self.task_name} with id {self.task_id}"
-        )
-        if hasattr(self, "state"):
-            self.confirm_state()
-        self.validate_min_inputs_schemas()
-        self._complete()
-        self.set_output_dtypes_and_names()
-        self.filter_required_cols()
-        if "anchor" in self.inputs:
-            self.anchor_data()
-        if "anchor" in self.input_tasks.keys():
-            self.input_tasks["anchor"].anchored_data.append(self)
-        self.complete_date_aggregate()
-        self.output = self.output.unique()
-        self.validate_min_output_schema()
-        self.completed = True
+        if not self.completed:
+            self.set_anchor_cohort()
+            self.complete_input_tasks()
+            print(
+                f"Starting completion of {self.task_name} with id {self.task_id}"
+            )
+            if hasattr(self, "state"):
+                self.confirm_state()
+            self.validate_min_inputs_schemas()
+            self._complete()
+            self.set_output_dtypes_and_names()
+            self.filter_required_cols()
+            if "anchor" in self.inputs:
+                self.anchor_data()
+            if "anchor" in self.input_tasks.keys():
+                self.input_tasks["anchor"].anchored_data.append(self)
+            self.complete_date_aggregate()
+            self.output = self.output.unique()
+            self.validate_min_output_schema()
+            self.completed = True
