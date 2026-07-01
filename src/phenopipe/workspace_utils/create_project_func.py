@@ -1,6 +1,7 @@
+import importlib
+import inspect
 import os
 import subprocess
-import sys
 import json
 
 def create_project(project_name: str = None):
@@ -137,3 +138,9 @@ def create_project(project_name: str = None):
     os.makedirs(project_name)
     with open(f'{project_name}/project_settings.json', "w") as f:
         f.write(json.dumps(setup_dict))
+
+    setup_env_module = importlib.import_module("phenopipe.workspace_utils.setup_env_func")
+    setup_env_script = inspect.getsource(setup_env_module)
+    with open(f"{project_name}/setup_env.py", "w") as f:
+        f.write(setup_env_script)
+

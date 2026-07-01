@@ -89,3 +89,6 @@ def setup_env():
     for lib, req in settings["reqs"].items():
         if importlib.util.find_spec(lib) is None:  
             print(subprocess.run(["pip", "install", req]))
+
+if __name__ == "__main__":
+    setup_env()
