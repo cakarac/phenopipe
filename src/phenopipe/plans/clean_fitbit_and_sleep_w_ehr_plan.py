@@ -21,9 +21,6 @@ clean_fitbit_and_sleep_w_ehr = {
         "demographics": {
             "name": "phenopipe.tasks.get_data.person_info.GetDemographics",
         },
-        "heart_failure": {
-            "name": "phenopipe.tasks.get_data.phenotype.HeartFailurePt",
-        },
         "last_medical_encounter": {
             "name": "phenopipe.tasks.get_data.GetMedicalEncounter",
             "select": "last",
