@@ -3,7 +3,6 @@ import random
 from abc import ABC, abstractmethod
 from typing import Optional, TypeVar, Any, List
 import polars as pl
-import inflection
 from pydantic import BaseModel, computed_field, field_validator
 
 PolarsDataFrame = TypeVar("polars.dataframe.frame.DataFrame")
@@ -78,7 +77,7 @@ class Task(BaseModel, ABC):
     @computed_field
     @property
     def task_name(self) -> str:
-        return inflection.underscore(self.__class__.__name__)
+        return self.__class__.__name__
 
     def model_post_init(self, __context__=None):
         if self.task_id is None:
