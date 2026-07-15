@@ -1,6 +1,6 @@
 [project]
 name = "phenopipe"
-version = "0.8.0"
+version = "0.9.0"
 description = ""
 authors = [
     {name = "cakarac",email = "cakar.adnancihan@gmail.com"}
@@ -18,6 +18,9 @@ dependencies = [
 
 [project.optional-dependencies]
 databricks = [ "databricks-connect>=13.3,<13.4", "spark" ]
+
+[project.scripts]
+create_phenopipe = 'phenopipe.workspace_utils:create_project'
 
 [tool.poetry]
 
