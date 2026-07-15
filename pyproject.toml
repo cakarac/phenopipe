@@ -1,6 +1,6 @@
 [project]
 name = "phenopipe"
-version = "0.8.0"
+version = "0.9.0"
 description = ""
 authors = [
     {name = "cakarac",email = "cakar.adnancihan@gmail.com"}
@@ -12,13 +12,15 @@ dependencies = [
     "polars (>=1.31.0,<2.0.0)",
     "google-cloud-bigquery (>=3.34.0,<4.0.0)",
     "pydantic (>=2.11.7,<3.0.0)",
-    "inflection (>=0.5.1,<0.6.0)",
     "pyyaml (>=6.0.2,<7.0.0)",
     "sqlparse (>=0.5.5,<0.6.0)"
 ]
 
 [project.optional-dependencies]
 databricks = [ "databricks-connect>=13.3,<13.4", "spark" ]
+
+[project.scripts]
+create_phenopipe = 'phenopipe.workspace_utils:create_project'
 
 [tool.poetry]
 

@@ -1,4 +1,3 @@
-import inflection
 from pydantic import computed_field
 from phenopipe.tasks.get_data.get_data import GetData
 
@@ -10,7 +9,7 @@ class GetMedicalEncounter(GetData):
     @computed_field
     @property
     def task_name(self) -> str:
-        return inflection.underscore(f"{self.__class__.__name__}_{self.select}")
+        return f"{self.__class__.__name__}{self.select}"
 
     def _complete(self):
         """
