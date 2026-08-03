@@ -6,6 +6,7 @@ from .icd_condition_builder import icd_condition_query
 from .lab_query_builder import lab_query
 from .med_query_builder import med_query
 from .survey_query_builder import survey_query
+from .survey_question_query_builder import survey_questions_query
 from .sleep_level_query_builder import sleep_level_query
 
 __all__ = [
@@ -17,5 +18,6 @@ __all__ = [
     "lab_query",
     "med_query",
     "survey_query",
+    "survey_questions_query",
     "sleep_level_query",
 ]

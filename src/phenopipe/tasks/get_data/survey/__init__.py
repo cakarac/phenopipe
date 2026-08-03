@@ -13,6 +13,10 @@ from .alcohol_drinks_typical_data import AlcoholDrinksTypicalData
 from .smoking_data import SmokingData
 from .alcohol_drinks_6_data import AlcoholDrinks6Data
 from .health_insurance_data import HealthInsuranceData
+from .survey_data import SurveyData
+from .survey_question_data import SurveyQuestionData
+from .cant_afford_care_data import CantAffordCareData
+from .delayed_medical_care_data import DelayedMedicalCareData
 
 __all__ = [
     "StableHouseConcernData",
@@ -30,4 +34,8 @@ __all__ = [
     "SmokingData",
     "AlcoholDrinks6Data",
     "HealthInsuranceData",
+    "SurveyData",
+    "SurveyQuestionData",
+    "CantAffordCareData",
+    "DelayedMedicalCareData",
 ]
