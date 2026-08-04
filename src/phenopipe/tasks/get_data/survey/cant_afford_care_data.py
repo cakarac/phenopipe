@@ -9,4 +9,4 @@ class CantAffordCareData(SurveyQuestionData):
     val_col: str = "cant_afford_care"
     survey: str = "Healthcare Access & Utilization"
     question_prefix: str = "Can"
-    state: Dict[str, list] = {"aou": "untested", "std_omop": "untested"}
+    state: Dict[str, str] = {"aou": "untested", "std_omop": "untested"}

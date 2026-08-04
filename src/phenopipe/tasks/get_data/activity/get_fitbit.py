@@ -1,7 +1,8 @@
+from typing import Dict
 from phenopipe.tasks.get_data.fixed_query import FixedQuery
 from phenopipe.query_builders.fixed_queries import FITBIT_QUERY
 
 
 class GetFitbit(FixedQuery):
     query: str = FITBIT_QUERY
-    state:str = "tested"
+    state: Dict[str, str] = {"aou": "tested"}

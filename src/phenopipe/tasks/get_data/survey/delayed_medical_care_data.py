@@ -9,4 +9,4 @@ class DelayedMedicalCareData(SurveyQuestionData):
     val_col: str = "delayed_medical_care"
     survey: str = "Healthcare Access & Utilization"
     question_prefix: str = "Delayed Medical Care"
-    state: Dict[str, list] = {"aou": "untested", "std_omop": "untested"}
+    state: Dict[str, str] = {"aou": "untested", "std_omop": "untested"}
