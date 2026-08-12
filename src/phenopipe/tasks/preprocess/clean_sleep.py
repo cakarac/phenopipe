@@ -73,4 +73,4 @@ class CleanSleep(Task):
             .filter(pl.col("minute_asleep_right") <= 0.3)
             .drop("minute_asleep_right")
         )
-        self.output = df
+        self.output = df.drop("date_of_birth")

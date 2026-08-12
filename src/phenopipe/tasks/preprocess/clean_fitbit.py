@@ -60,4 +60,4 @@ class CleanFitbit(Task):
         )
         summarize_n(df)
 
-        self.output = df
+        self.output = df.drop("date_of_birth")

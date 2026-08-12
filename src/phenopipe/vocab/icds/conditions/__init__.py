@@ -18,6 +18,7 @@ from .cirrhosis_vocab import CIRRHOSIS_ICDS
 from .hcm_vocab import HCM_ICDS
 from .anxiety_vocab import ANXIETY_ICDS
 from .ischemic_stroke_vocab import ISCHEMIC_STROKE_ICDS
+from .cad_vocab import CAD_ICDS
 from .ibd_vocab import IBD_ICDS
 from .interstitial_lung_disease_vocab import INTERSTITIAL_LUNG_DISEASE_ICDS
 from .ptsd_vocab import PTSD_ICDS
@@ -95,4 +96,5 @@ __all__ = [
     "SLEEP_APNEA_ICDS",
     "DIABETES_T1_ICDS",
     "DIABETES_T2_ICDS",
+    "CAD_ICDS",
 ]
