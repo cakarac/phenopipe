@@ -47,6 +47,14 @@ class CombinePts(Task):
                 }
             )
 
+            schema = df.collect_schema()
+
+            if schema.get(self.person_col) != pl.String:
+                df = df.with_columns(pl.col(self.person_col).cast(pl.String))
+
+            if schema.get(self.date_col) != pl.Date:
+                df = df.with_columns(pl.col(self.date_col).cast(pl.Date))
+
             df = df.select([self.person_col, self.date_col])
 
             frames.append(df)
