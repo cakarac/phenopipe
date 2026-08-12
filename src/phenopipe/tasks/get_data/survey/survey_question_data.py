@@ -47,7 +47,9 @@ class SurveyQuestionData(GetData):
         )
         self.set_date_column_dtype()
         if self.answer_map:
-            self.output = self.output.replace(self.answer_map)
+            self.output = self.output.with_columns(
+                pl.col(f"{self.val_col}_survey_response").replace(self.answer_map)
+            )
         if self.binary_answer:
             self.output = self.output.with_columns(
                 pl.col(f"{self.val_col}_survey_response").str.contains(self.binary_answer).cast(pl.Int8)
