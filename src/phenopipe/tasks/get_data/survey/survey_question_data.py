@@ -61,7 +61,7 @@ class SurveyQuestionData(GetData):
             )
             self.output = self.output.pivot(
                 index=[self.person_col, self.date_col],
-                values=f"{self.val_col}_survey_response"
+                on=f"{self.val_col}_survey_question"
             )
             if self.compute_score and self.binary_answer:
                 question_cols = [c for c in self.output.columns if c not in [self.person_col, self.date_col]]
