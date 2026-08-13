@@ -12,7 +12,7 @@ class SurveyQuestionData(GetData):
     answer_map: Optional[Dict[str, str]] = None  # optional mapping to recode survey responses
     binary_answer: Optional[str] = None  # regex pattern; if set, response column is replaced with boolean match result
     compute_score: bool = False  # if True, sums binary answer columns into a score (requires format="wide" and binary_answer)
-    format: Optional[str] = None  # output format, use "wide" to pivot questions to columns
+    df_format: Optional[str] = None  # output format, use "wide" to pivot questions to columns
 
     def _complete(self):
         """
@@ -55,7 +55,7 @@ class SurveyQuestionData(GetData):
                 pl.col(f"{self.val_col}_survey_response").str.contains(self.binary_answer).cast(pl.Int8)
             )
 
-        if self.format == "wide":
+        if self.df_format == "wide":
             self.output = self.output.with_columns(
                 pl.col(f"{self.val_col}_survey_question").str.replace_all(r"[^a-zA-Z0-9]+", "")
             )

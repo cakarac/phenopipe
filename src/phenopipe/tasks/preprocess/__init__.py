@@ -4,6 +4,7 @@ from .clean_sleep import CleanSleep
 from .clean_sleep_with_ehr import CleanSleepWithEhr
 from .combine_fitbit_and_sleep import CombineFitbitAndSleep
 from .combine_pts import CombinePts
+from .combine_fitbit_sleep_w_demo import CombineFitbitSleepWDemo
 
 __all__ = [
 	"CleanFitbit",
@@ -12,4 +13,5 @@ __all__ = [
 	"CleanSleepWithEhr",
 	"CombineFitbitAndSleep",
 	"CombinePts",
+	"CombineFitbitSleepWDemo",
 ]
